@@ -12,6 +12,25 @@
 \usepackage{xcolor} % For colored text if needed
 \usepackage{listings} % For R code
 \usepackage{float}
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\amsfonts
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs} % For nicer tables
+\usepackage{longtable} % For tables that span multiple pages
+\usepackage{enumitem} % For more control over lists
+\usepackage{xcolor} % For colored text if needed
+\usepackage{listings} % For R code
+\usepackage{float} % For better figure placement control
+
+\newcommand{\Rpackage}[1]{\texttt{#1}} % Command for R packages
+\newcommand{\Rfunction}[1]{\texttt{#1()}} % Command for R functions
+\newcommand{\Robject}[1]{\texttt{#1}} % Command for R objects/variables
+\newcommand{\Rcode}[1]{\texttt{#1}} % For inline R code
 
 
 \hypersetup{
@@ -233,62 +252,7 @@ text(10, 0.6, "p=10, ~65% near boundary", pos=4)
         \begin{itemize}
             \item Application of descriptive statistics and basic plotting in R.
             \item See `ex2.8.Rmd` (Canvas) or `ch2-applied.R` (GitHub) for solution ideas.
-        \end{itemize}
-
-\documentclass[12pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\amsfonts
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
-\usepackage{hyperref}
-\usepackage{booktabs} % For nicer tables
-\usepackage{longtable} % For tables that span multiple pages
-\usepackage{enumitem} % For more control over lists
-\usepackage{xcolor} % For colored text if needed
-\usepackage{listings} % For R code
-\usepackage{float} % For better figure placement control
-
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=magenta,      
-    urlcolor=cyan,
-    pdftitle={BAN404 Exam Companion},
-    pdfpagemode=FullScreen,
-}
-
-\lstdefinestyle{Rstyle}{
-    language=R,
-    basicstyle=\ttfamily\footnotesize,
-    keywordstyle=\color{blue},
-    commentstyle=\color{green!40!black},
-    stringstyle=\color{purple},
-    showstringspaces=false,
-    breaklines=true,
-    frame=single,
-    numbers=left,
-    numberstyle=\tiny\color{gray},
-    captionpos=b % caption below listing
-}
-\lstset{style=Rstyle}
-
-\newcommand{\Rpackage}[1]{\texttt{#1}} % Command for R packages
-\newcommand{\Rfunction}[1]{\texttt{#1()}} % Command for R functions
-\newcommand{\Robject}[1]{\texttt{#1}} % Command for R objects/variables
-\newcommand{\Rcode}[1]{\texttt{#1}} % For inline R code
-
-\title{BAN404 Statistical Learning - Exam Companion}
-\author{Brede Espelid}
-\date{Spring 2024}
-
-\begin{document}
-\maketitle
-\tableofcontents
-\newpage
-
-% ... (Preamble and previous sections as before) ...
+        \end{itemize
 
 \subsection{Lecture 2: Linear Regression and K-Nearest Neighbors (KNN)}
     \subsubsection{Revisiting Overfitting with Polynomial Regression }
@@ -3158,7 +3122,10 @@ gam.fit2 <- gam(wage ~ s(year, df=4) + s(age, df=5) + education, data=Wage)
 
 \section{Previous Exams}
 \subsection{Exam Spring 2021 }
-Overall Datasets: \Robject{Smarket} (\Rpackage{ISLR}), \Robject{dataCar(\Rpackage{insuranceData})}
+\vspace{0.5em}
+Overall Datasets: \Robject{Smarket} (\Rpackage{ISLR}), 
+\Robject{dataCar(\Rpackage{insuranceData})}
+\vspace{0.5em}
 
 \textbf{\Large Task 1: Analysis of \Robject{Smarket} Data}
 \vspace{0.5em}
@@ -3167,7 +3134,7 @@ Overall Datasets: \Robject{Smarket} (\Rpackage{ISLR}), \Robject{dataCar(\Rpackag
         \paragraph{Question}
         \textit{Use the bootstrap to create a histogram of the sampling distribution for the volatility (i.e., the standard deviation of the returns) of the S\&P stock index. Observations of the returns are in the variable \Robject{Today}. Start by setting the seed to 1 (\Rcode{set.seed(1)}). Use 1000 bootstrap replicates.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1a: Bootstrap Volatility - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 library(ISLR)
 library(boot)
 data(Smarket)
@@ -3181,7 +3148,7 @@ hist(boot_volatility_Smarket$t, main = "Bootstrap Dist. of Volatility (Smarket$T
      xlab = "Estimated Volatility (Std Dev)", col = "lightblue", breaks = "Scott")
 \end{lstlisting}
         \paragraph{Tidyverse Solution (Data Prep + Base R boot)}
-\begin{lstlisting}[caption={1a: Bootstrap Volatility - Tidyverse (Exam 2021)}]
+\begin{lstlisting}[]
 library(ISLR); library(boot); library(dplyr); library(ggplot2)
 data(Smarket)
 today_returns_Smarket <- Smarket %>% pull(Today)
@@ -3199,7 +3166,7 @@ ggplot(data.frame(volatility = boot_volatility_tidy_Smarket$t), aes(x = volatili
         \paragraph{Question}
         \textit{Compute a 95\% confidence interval based on the bootstrap, assuming that the volatility is normally distributed.}
         \paragraph{Base R Solution (using \Rpackage{boot})}
-\begin{lstlisting}[caption={1b: Normal Bootstrap CI - Base R boot (Exam 2021)}]
+\begin{lstlisting}[]
 # Assuming boot_volatility_Smarket from 1a
 ci_normal_Smarket <- boot.ci(boot_volatility_Smarket, type = "norm")
 print(ci_normal_Smarket)
@@ -3210,7 +3177,7 @@ print(ci_normal_Smarket)
         \paragraph{Question}
         \textit{Compute a 95\% confidence interval based on the bootstrap, not making the normality assumption but use percentiles from the bootstrapped volatilities.}
         \paragraph{Base R Solution (using \Rpackage{boot})}
-\begin{lstlisting}[caption={1c: Percentile Bootstrap CI - Base R boot (Exam 2021)}]
+\begin{lstlisting}[]
 # Assuming boot_volatility_Smarket from 1a
 ci_percentile_Smarket <- boot.ci(boot_volatility_Smarket, type = "perc")
 print(ci_percentile_Smarket)
@@ -3221,7 +3188,7 @@ print(ci_percentile_Smarket)
         \paragraph{Question}
         \textit{Squared returns, \Rcode{Today\textasciicircum{}2}, can be used as a proxy for volatility. Squared returns are often autocorrelated, indicating that volatility can be predicted. Run a regression of the square of \Robject{Today} on the square of \Robject{Lag1} and interpret the estimate of the regression parameter for the square of \Robject{Lag1}.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1d: Regression of Squared Returns - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 model_sq_returns_Smarket <- lm(I(Today^2) ~ I(Lag1^2), data = Smarket)
 summary_model_sq_Smarket <- summary(model_sq_returns_Smarket)
 print(summary_model_sq_Smarket)
@@ -3235,7 +3202,7 @@ print(summary_model_sq_Smarket)
         \paragraph{Question}
         \textit{Compute the bootstrapped standard error of the regression coefficient in front of the square of \Robject{Lag1} in the model in d) and compare it with the standard error from the regression output.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1e: Bootstrap SE for Coefficient - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 coef_sq_lag1_Smarket_bs <- function(data, index) {
   subset_data <- data[index, ]
   fit <- lm(I(Today^2) ~ I(Lag1^2), data = subset_data)
@@ -3260,7 +3227,7 @@ cat("LM Output SE for I(Lag1^2) coef (Smarket):", lm_se_coef_Smarket, "\n")
         \paragraph{Question}
         \textit{Start by first selecting the observations where there is an occurrence of claim, \Rcode{clm!=0}. Also, remove the variable \Rcode{X\_OBSTAT\_}. Work with this new data set for the rest of Task 2.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2a: Filter and Remove (dataCar) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 library(insuranceData)
 data(dataCar)
 xdata_task2_car <- dataCar[dataCar$clm != 0, ]
@@ -3268,7 +3235,7 @@ xdata_task2_car <- xdata_task2_car[, names(xdata_task2_car) != "X_OBSTAT_"]
 # print(paste("Dimensions after filtering:", paste(dim(xdata_task2_car), collapse="x")))
 \end{lstlisting}
         \paragraph{Tidyverse Solution}
-\begin{lstlisting}[caption={2a: Filter and Remove (dataCar) - Tidyverse (Exam 2021)}]
+\begin{lstlisting}[]
 library(insuranceData); library(dplyr)
 data(dataCar)
 xdata_task2_car_tidy <- dataCar %>%
@@ -3281,7 +3248,7 @@ xdata_task2_car_tidy <- dataCar %>%
         \paragraph{Question}
         \textit{Use descriptive statistics, the description of the data in the help-function and common sense to remove variables that you think will not be helpful. Motivate your choices thoroughly. Also, make sure that all variables are on the right format.}
         \paragraph{Base R / Tidyverse Solution (Conceptual - based on marking scheme)}
-\begin{lstlisting}[caption={2b: Data Cleaning & Formatting (dataCar) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 # Assuming xdata_task2_car from 2a
 # Marking scheme solution: Remove clm (col 3 in their xdata after X_OBSTAT_ removal)
 # Original columns: veh_value, exposure, clm, numclaims, claimcst0, veh_body, veh_age, gender, area, agecat
@@ -3312,7 +3279,7 @@ xdata_task2_car_processed$agecat <- as.factor(xdata_task2_car_processed$agecat)
         \paragraph{Question}
         \textit{Use a cross validation approach to evaluate predictions for \Rcode{claimcst0} using: 1) Full LM, 2) All simple LMs, 3) Intercept-only LM. Motivate CV method. Seed 123 (Marking guide used 543, this exam used 123 in task description, so using 123).}
         \paragraph{Base R Solution (5-fold CV)}
-\begin{lstlisting}[caption={2c: CV for Linear Models (dataCar) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 # Assuming xdata_task2_car_processed from 2b
 set.seed(123) 
 K_cv <- 5
@@ -3366,7 +3333,7 @@ print(sort(cv_avg_mses_car))
         \paragraph{Question}
         \textit{Use a GAM with smoothing splines for the numerical variables. Include categorical variables in the model as well. Use \Rfunction{s}-function in \Rpackage{gam}-library, with argument \Rcode{df=4}, without motivation. Plot the result and comment on the relationship between predictors and dependent variable.}
         \paragraph{Base R Solution (using \Rpackage{gam})}
-\begin{lstlisting}[caption={2d: GAM with Smoothing Splines (dataCar) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 library(gam)
 # Assuming xdata_task2_car_processed from 2b
 num_preds_car_gam <- names(xdata_task2_car_processed)[sapply(xdata_task2_car_processed, is.numeric) & 
@@ -3395,7 +3362,7 @@ gam_model_car_full <- gam(gam_formula_full_car, data=xdata_task2_car_processed)
         \paragraph{Question}
         \textit{Use your conclusions in 2d to specify an appropriate GAM-model. Compute the testMSE for this GAM-model.}
         \paragraph{Base R Solution (Integrating with CV loop from 2c)}
-\begin{lstlisting}[caption={2e: Refined GAM and Test MSE (dataCar) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 # Based on marking scheme plots/conclusions: s(veh_value), s(exposure), linear numclaims, and all factors.
 # Assuming 'numclaims' is numeric, others like 'veh_body', 'veh_age', 'gender', 'area', 'agecat' are factors.
 gam_formula_refined_car_str <- "claimcst0 ~ s(veh_value, df=4) + s(exposure, df=4) + numclaims + veh_body + veh_age + gender + area + agecat"
@@ -3426,7 +3393,7 @@ gam_formula_refined_car <- as.formula(gam_formula_refined_car_str)
         \paragraph{Question}
         \textit{Start by removing variables \Rcode{X\_OBSTAT\_}, \Rcode{numclaims} and \Rcode{claimcst0}. Compute and interpret appropriate cross-tables of \Rcode{clm} and the categorical variables. Also compute and interpret well-chosen descriptive statistics (such as central tendencies and measures of variation) for the numerical variables for each of the two categories of \Rcode{clm}. Are some of the categories of the categorical variables more interesting than others? Based on this, do you see any promising predictors for \Rcode{clm}? Mention a drawback with such pairwise comparisons.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={3a: Descriptives for clm (dataCar Original) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 data(dataCar) # Reload original
 xdata_task3_orig_car <- dataCar[, !(names(dataCar) %in% c("X_OBSTAT_", "numclaims", "claimcst0"))]
 xdata_task3_orig_car$clm <- as.factor(xdata_task3_orig_car$clm) # Target variable
@@ -3464,7 +3431,7 @@ xdata_task3_orig_car$agecat <- as.factor(xdata_task3_orig_car$agecat)
         \paragraph{Question}
         \textit{Based on your hypotheses from 3a, use logistic regression based on all or a subset of the predictors to predict \Rcode{clm}. Interpret the estimated coefficients.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={3b: Logistic Regression for clm (dataCar Original) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 # Assuming xdata_task3_orig_car from 3a.
 # Predictors from marking guide: veh_body, agecat, veh_value, exposure
 logit_model_clm_car_task3 <- glm(clm ~ veh_body + agecat + veh_value + exposure, 
@@ -3483,7 +3450,7 @@ summary(logit_model_clm_car_task3)
         \paragraph{Question}
         \textit{Modify model if you believe it to be sensible. Use the validation set approach with a 50/50 training/test split to evaluate the predictions from the logistic regression. Choose a threshold for when an estimated probability should lead to a prediction of a claim (imagine cost FN > FP). Compute a confusion matrix and argue for your choice of threshold. Set the seed to 1234 (Marking guide seed was different, here 1234).}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={3c: Validation & Threshold for Logistic (dataCar Original) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 # Using xdata_task3_orig_car from 3a
 set.seed(1234) 
 n_task3 <- nrow(xdata_task3_orig_car)
@@ -3517,7 +3484,7 @@ print(conf_matrix_task3_logistic)
         \paragraph{Question}
         \textit{Use boosted trees to predict \Rcode{clm} and evaluate the predictions with the same approach as in 3c.}
         \paragraph{Base R Solution (using \Rpackage{gbm})}
-\begin{lstlisting}[caption={3d: Boosted Trees for clm (dataCar Original) - Base R (Exam 2021)}]
+\begin{lstlisting}[]
 library(gbm)
 # Using train_data_task3, test_data_task3, chosen_threshold_task3 from 3c
 # GBM requires numeric 0/1 response for bernoulli
@@ -3556,7 +3523,7 @@ Overall Datasets: \Robject{OJ} (\Rpackage{ISLR}), \Robject{Computers} (\Rpackage
         \paragraph{Question}
         \textit{Remove the variable \Rcode{LoyalCH}. If necessary, recode categorical variables as factors and remove variables that cannot be used in the analysis. Base your reasoning to do this on the help function and by looking at the data. Split the data in a 50/50 split to create a training and a test dataset. Use the seed 8655, when you split the data, \Rcode{set.seed(8655)}.}
         \paragraph{Base R Solution (basert på løsningsforslag)}
-\begin{lstlisting}[caption={1a: Data Prep & Split (OJ) - Base R (Exam 2022)}]
+\begin{lstlisting}[]
 library(ISLR)
 data(OJ)
 
@@ -3590,7 +3557,7 @@ test_oj <- oj_data_prep[-train_idx_oj, ]
 # Variables with few unique values and no inherent order converted to factors.
 \end{lstlisting}
         \paragraph{Tidyverse Solution}
-\begin{lstlisting}[caption={1a: Data Prep & Split (OJ) - Tidyverse (Exam 2022)}]
+\begin{lstlisting}
 library(ISLR); library(dplyr); library(purrr)
 data(OJ)
 
@@ -3609,7 +3576,7 @@ test_oj_tidy <- oj_data_prep_tidy[-train_idx_oj_tidy, ]
         \paragraph{Question}
         \textit{Use descriptive statistics to detect promising predictors for \Rcode{Purchase}. Present the most interesting results as tables and graphs and comment on them.}
         \paragraph{Base R / Tidyverse Solution (Conceptual - Løsningsforslag fokuserer på plott og `by`)}
-\begin{lstlisting}[caption={1b: Descriptive Stats for Purchase (OJ) - Conceptual (Exam 2022)}]
+\begin{lstlisting}
 # Assuming train_oj from 1a
 # Visual exploration (Base R)
 # par(mfrow=c(1,2)) # Example for specific plots
@@ -3643,7 +3610,7 @@ test_oj_tidy <- oj_data_prep_tidy[-train_idx_oj_tidy, ]
         \paragraph{Question}
         \textit{Fit a logistic regression of \Rcode{Purchase} on all the variables you found promising in 1b, evaluate the predictions using test accuracy and a confusion matrix. If you, in the process, detect that you would modify your model, you should do so and explain why. Use the threshold 0.5 when you go from estimated probability to a prediction.}
         \paragraph{Base R Solution (Løsningsforslag bruker \Rcode{PriceDiff + STORE})}
-\begin{lstlisting}[caption={1c: Logistic Regression (OJ) - Base R (Exam 2022)}]
+\begin{lstlisting}
 # Assuming train_oj, test_oj from 1a
 # Løsningsforslag ender opp med PriceDiff og STORE etter å ha vurdert PctDisc-variablene som ikke-signifikante.
 # Vi starter med de 'lovende' og fjerner evt. ikke-signifikante.
@@ -3676,7 +3643,7 @@ cat("Test Accuracy (Logistic Regression):", accuracy_logit_oj, "\n")
         \paragraph{Question}
         \textit{Fit a classification tree, using all variables (except the one(s) you removed in 1a), and plot it. Give an example of how to interpret a branch of the tree. Also, use the same evaluation measures as in 1c and evaluate the predictions. Use the threshold 0.5.}
         \paragraph{Base R Solution (using \Rpackage{tree})}
-\begin{lstlisting}[caption={1d: Classification Tree (OJ) - Base R (Exam 2022)}]
+\begin{lstlisting}[]
 library(tree)
 # Assuming train_oj, test_oj from 1a (with all original predictors kept, except LoyalCH, StoreID)
 tree_oj <- tree(Purchase ~ ., data=train_oj)
@@ -3707,7 +3674,7 @@ cat("Test Accuracy (Classification Tree):", accuracy_tree_oj, "\n")
         \paragraph{Question}
         \textit{In 1c and 1d you have used the threshold 0.5. Use cross-validation to find the threshold that maximizes the accuracy for the tree. Evaluate predictions from the tree using the best threshold. Are the predictions improved? Use the seed 4598 when you split the data for CV (this implies an inner CV split on the original training data).}
         \paragraph{Base R Solution (Validation set for threshold tuning on original training data)}
-\begin{lstlisting}[caption={1e: CV for Optimal Threshold (OJ Tree) - Base R (Exam 2022)}]
+\begin{lstlisting}
 # Using original train_oj and test_oj from 1a.
 # To find optimal threshold, we need a validation set, split from original train_oj.
 set.seed(4598) # Seed for splitting train_oj further
@@ -3754,7 +3721,7 @@ cat("Test Accuracy (Tree with Optimal Threshold):", accuracy_tree_optimal, "\n")
         \textit{In a) you removed the variable \Rcode{LoyalCH}. Imagine now that this variable is actually available at the time of prediction. By augmenting your analysis with this variable both for the logistic regression and the classification tree, conclude if this variable contribute to predicting \Rcode{Purchase}.}
         \paragraph{Solution Outline}
         \textit{Repeat steps 1a-1d, but KEEP LoyalCH in the dataset. Compare test accuracies and model summaries.}
-\begin{lstlisting}[caption={1f: Re-analysis with LoyalCH - Conceptual (Exam 2022)}]
+\begin{lstlisting}
 # 1. Data Prep: Start with original OJ, remove only StoreID. Convert factors. Split.
 #    oj_with_loyalch <- OJ[, names(OJ) != "StoreID"]
 #    ... convert factors, split into train_oj_L, test_oj_L ...
@@ -3786,7 +3753,7 @@ cat("Test Accuracy (Tree with Optimal Threshold):", accuracy_tree_optimal, "\n")
         \paragraph{Question}
         \textit{Just as in 1a; if necessary, recode categorical variables as factors and remove variables that cannot be used in the analysis. Base your reasoning to do this on the help function and by looking at the data. Split the data in a 50/50 split to create a training and a test dataset. Use the seed 4598, when you split the data, \Rcode{set.seed(4598)}.}
         \paragraph{Base R Solution (basert på løsningsforslag)}
-\begin{lstlisting}[caption={2a: Data Prep & Split (Computers) - Base R (Exam 2022)}]
+\begin{lstlisting}[]
 library(Ecdat)
 data(Computers)
 
@@ -3808,7 +3775,7 @@ test_comp <- Computers[-train_idx_comp, ]
 # print(paste("Train Computers dimensions:", paste(dim(train_comp), collapse="x")))
 \end{lstlisting}
         \paragraph{Tidyverse Solution}
-\begin{lstlisting}[caption={2a: Data Prep & Split (Computers) - Tidyverse (Exam 2022)}]
+\begin{lstlisting}
 library(Ecdat); library(dplyr)
 data(Computers)
 Computers_prep_tidy <- Computers %>%
@@ -3825,7 +3792,7 @@ test_comp_tidy <- Computers_prep_tidy[-train_idx_comp_tidy, ]
         \paragraph{Question}
         \textit{Use descriptive statistics to find promising predictors. Comment on your observations.}
         \paragraph{Base R / Tidyverse Solution (Conceptual - Løsningsforslag bruker \Rcode{plot(price~.,data=train)})}
-\begin{lstlisting}[caption={2b: Descriptive Stats for Price (Computers) - Conceptual (Exam 2022)}]
+\begin{lstlisting}
 # Assuming train_comp from 2a
 # Visual exploration (Base R)
 # par(mfrow=c(3,3)) # Adjust layout as needed
@@ -3845,7 +3812,7 @@ test_comp_tidy <- Computers_prep_tidy[-train_idx_comp_tidy, ]
         \paragraph{Question}
         \textit{Run a linear regression on all explanatory variables. Interpret some of the coefficients. Evaluate the prediction performance on an appropriate measure.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2c: Linear Regression (Computers) - Base R (Exam 2022)}]
+\begin{lstlisting}
 # Assuming train_comp, test_comp from 2a
 lm_comp_full <- lm(price ~ ., data=train_comp)
 summary_lm_comp <- summary(lm_comp_full)
@@ -3866,7 +3833,7 @@ cat("Test MSE (Full LM for Computers):", mse_lm_comp_test, "\n")
         \paragraph{Question}
         \textit{Investigate if the predictions of \Rcode{price} would be better if we use a linear regression of \Rcode{log(price)} on the other variables.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2d: Log-Linear Regression (Computers) - Base R (Exam 2022)}]
+\begin{lstlisting}
 # Create log(price) variable, ensuring it's available in train and test
 # train_comp_log <- train_comp
 # test_comp_log <- test_comp
@@ -3894,7 +3861,7 @@ cat("Test MSE (Log-Linear LM for Computers):", mse_loglm_comp_test, "\n")
         \paragraph{Question}
         \textit{In 2d you fitted a model where \Rcode{price} is a particular nonlinear function of the other variables. You should now investigate another non-linear models. First, fit a GAM-model, plot the result and evaluate the predictions. Is there a reason to not allow for some variables to have a non-linear relationship with \Rcode{price}?}
         \paragraph{Base R Solution (using \Rpackage{gam})}
-\begin{lstlisting}[caption={2e: GAM for Price (Computers) - Base R (Exam 2022)}]
+\begin{lstlisting}
 library(gam)
 # Assuming train_comp, test_comp from 2a
 # Formula for GAM: s() for continuous, direct for factors
@@ -3946,7 +3913,7 @@ cat("Test MSE (GAM for Computers):", mse_gam_comp_test, "\n")
         \paragraph{Question}
         \textit{Use bagged trees to predict \Rcode{price}. Evaluate the predictions. Compute variable importance measures and comment on the results. Explain the logic behind the measure for variable importance that you are using. (Hint: If the computation takes a long time you can reduce the number of trees fitted using the argument \Rcode{ntree}.)}
         \paragraph{Base R Solution (using \Rpackage{randomForest})}
-\begin{lstlisting}[caption={2g: Bagging for Price (Computers) - Base R (Exam 2022)}]
+\begin{lstlisting}
 library(randomForest)
 # Assuming train_comp, test_comp from 2a
 # For bagging, mtry = number of predictors.
@@ -4012,7 +3979,7 @@ Overall Dataset: \Robject{Churn.csv} (Provided on Canvas)
         \paragraph{Question}
         \textit{If necessary, recode categorical variables as factors and remove variables that cannot be used in the analysis. Also, remove variables if you mean that they are unreasonable to include. One such reason could be that a variable is not available at the time the prediction is made but there might be other reasons too. Motivate your choices in words. Split the data in a 50/50 split to create a training and a test dataset. Use the seed 86554354, when you split the data, \Rcode{set.seed(86554354)}.}
         \paragraph{Base R Solution (basert på løsningsforslag)}
-\begin{lstlisting}[caption={1a: Data Prep & Split (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Churn <- read.csv("Churn.csv") % \textit{(Assuming data is read)} %
 
 # Remove id
@@ -4041,7 +4008,7 @@ test_churn <- xdata_churn[-train_idx_churn, ]
 # in the marking scheme; it's assumed available for this task.
 \end{lstlisting}
         \paragraph{Tidyverse Solution}
-\begin{lstlisting}[caption={1a: Data Prep & Split (Churn) - Tidyverse (Exam 2023)}]
+\begin{lstlisting}
 # library(dplyr)
 # Churn <- read.csv("Churn.csv")
 # 
@@ -4060,7 +4027,7 @@ test_churn <- xdata_churn[-train_idx_churn, ]
         \paragraph{Question}
         \textit{Use descriptive methods to find useful predictors for \Rcode{bill\_avg}. Write in words which R functions you used, present the most interesting results as tables and graphs and comment on them.}
         \paragraph{Base R / Tidyverse Solution (Conceptual - Marking guide uses \Rcode{plot(bill\_avg~., data=train)})}
-\begin{lstlisting}[caption={1b: Descriptive Stats for bill_avg (Churn) - Conceptual (Exam 2023)}]
+\begin{lstlisting}
 # Assuming train_churn from 1a
 # Visual exploration (Base R as per marking guide)
 # par(mfrow=c(3,3)) # To fit all plots (9 predictors excluding id and bill_avg itself)
@@ -4082,7 +4049,7 @@ test_churn <- xdata_churn[-train_idx_churn, ]
         \paragraph{Question}
         \textit{Produce the best possible predictions of \Rcode{bill\_avg} using standard linear regression (OLS) and evaluate them. Motivate your choices of variables, how you evaluate the predictions and the evaluation measure used.}
         \paragraph{Base R Solution (Comparing full model vs. model without download/upload\_avg)}
-\begin{lstlisting}[caption={1c: OLS for bill_avg (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming train_churn, test_churn from 1a
 # Model 1: Full model with all predictors
 ols_full_churn <- lm(bill_avg ~ ., data=train_churn)
@@ -4112,7 +4079,7 @@ cat("Test MSE (Reduced OLS for bill_avg):", mse_ols_reduced_churn, "\n")
         \paragraph{Question}
         \textit{Fit a LASSO regression with all variables. Here you should use the tools you have learned to find appropriate tuning parameters. Are you standardizing the predictors or not? Motivate your choice. Compare the estimated coefficients with the estimated coefficient from an OLS regression on all predictors. (Hint: Using categorical (factor) variables in LASSO, you will have to create dummy variables. \Rfunction{dummy\_cols} from \Rpackage{fastDummies} or \Rfunction{model.matrix} can be used. \Rfunction{glmnet} requires matrices as input).}
         \paragraph{Base R Solution (using \Rpackage{glmnet})}
-\begin{lstlisting}[caption={1d: LASSO for bill_avg (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 library(glmnet)
 # Assuming train_churn, test_churn from 1a. Factors are already created.
 # For glmnet, factors need to be converted to dummy variables.
@@ -4167,7 +4134,7 @@ lasso_coeffs <- coef(lasso_model_churn)
         \paragraph{Question}
         \textit{Compute predictions for \Rcode{bill\_avg} with the model fitted in 1d) and evaluate them with an appropriate measure.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1e: Evaluate LASSO (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming lasso_model_churn (fitted on trainX_churn) and testX_churn from 1d
 pred_lasso_churn_test <- predict(lasso_model_churn, newx=testX_churn)
 mse_lasso_churn_test <- mean((test_churn$bill_avg - pred_lasso_churn_test)^2, na.rm=TRUE)
@@ -4179,7 +4146,7 @@ cat("Test MSE (LASSO for bill_avg):", mse_lasso_churn_test, "\n")
         \paragraph{Question}
         \textit{Fit a regression tree to \Rcode{bill\_avg}. Explain the choices you are making. Interpret the tree.}
         \paragraph{Base R Solution (using \Rpackage{tree})}
-\begin{lstlisting}[caption={1f: Regression Tree (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 library(tree)
 # Assuming train_churn from 1a (with factors)
 # Choices: Using all predictors. Default tree.control parameters initially.
@@ -4203,7 +4170,7 @@ tree_bill_avg <- tree(bill_avg ~ ., data=train_churn)
         \paragraph{Question}
         \textit{Predict \Rcode{bill\_avg} with the regression tree in 1f) and evaluate the predictions.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1g: Evaluate Regression Tree (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming tree_bill_avg from 1f and test_churn from 1a
 pred_tree_bill_avg_test <- predict(tree_bill_avg, newdata=test_churn)
 mse_tree_bill_avg_test <- mean((test_churn$bill_avg - pred_tree_bill_avg_test)^2, na.rm=TRUE)
@@ -4215,7 +4182,7 @@ cat("Test MSE (Regression Tree for bill_avg):", mse_tree_bill_avg_test, "\n")
         \paragraph{Question}
         \textit{Fit a random forest to \Rcode{bill\_avg}. Plot a variable importance measure for the predictors, interpret it, and, briefly, explain the measure. (If computations are too slow, reduce \Rcode{ntree} or use smaller training data.)}
         \paragraph{Base R Solution (using \Rpackage{randomForest})}
-\begin{lstlisting}[caption={1h: Random Forest (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 library(randomForest)
 # Assuming train_churn from 1a
 set.seed(86554354) % \textit{(Consistent seed)} %
@@ -4241,7 +4208,7 @@ varImpPlot(rf_bill_avg, main="Variable Importance for bill_avg (Random Forest)")
         \paragraph{Question}
         \textit{Use the model in 1h) to predict \Rcode{bill\_avg} and evaluate the predictions.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1i: Evaluate Random Forest (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming rf_bill_avg from 1h and test_churn from 1a
 pred_rf_bill_avg_test <- predict(rf_bill_avg, newdata=test_churn, na.action=na.pass)
 mse_rf_bill_avg_test <- mean((test_churn$bill_avg - pred_rf_bill_avg_test)^2, na.rm=TRUE)
@@ -4275,7 +4242,7 @@ cat("Test MSE (Random Forest for bill_avg):", mse_rf_bill_avg_test, "\n")
         \paragraph{Question}
         \textit{Make sure that all variables are on the right format for your analysis. Use tables and graphs and common sense to remove variables that you think will not be helpful. Motivate your choices thoroughly. Use descriptive statistics to find promising predictors for \Rcode{churn}.}
         \paragraph{Solution Outline (Base R / Tidyverse)}
-\begin{lstlisting}[caption={2a: Descriptives for churn (Churn) - Conceptual (Exam 2023)}]
+\begin{lstlisting}
 # Assuming xdata_churn from 1a (id removed, specified columns are factors)
 # and train_churn (the training split)
 # Data format should be okay from 1a if factors were made correctly.
@@ -4314,7 +4281,7 @@ cat("Test MSE (Random Forest for bill_avg):", mse_rf_bill_avg_test, "\n")
         \paragraph{Question}
         \textit{Let Y be a stochastic variable equal to 1 if a customer churn and 0 otherwise and let $p = P(Y = 1)$ be the unconditional probability to churn. The first 50 (original, not from the training or test data) observations of the variable \Rcode{churn} contains observations drawn from the stochastic variable Y. Use the bootstrap to compute a 95\% confidence interval for $p$. Compare the standard approximation $\hat{p} \pm 1.96 \sqrt{\hat{p}(1-\hat{p})/n}$ where $\hat{p}$ is the sample fraction of churners and $n$ is the number of observations.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2b: Bootstrap CI for P(churn) (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Using original xdata_churn (after factor conversion in 1a)
 # churn_numeric_orig <- as.numeric(xdata_churn$churn) - 1 # Convert factor to 0/1
 # first_50_churn <- churn_numeric_orig[1:50]
@@ -4348,7 +4315,7 @@ print(ci_norm_approx_churn)
         \paragraph{Question}
         \textit{Fit a logistic regression with all variables to \Rcode{churn}. Interpret the coefficients in front of \Rcode{is\_tv\_subscriber} and \Rcode{is\_movie\_package\_subscriber}. For all coefficients, is the sign as you expected?}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2c: Logistic Regression for churn (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming train_churn from 1a (with factors, including original 'churn' factor)
 logit_churn_allvars <- glm(churn ~ ., data=train_churn, family=binomial)
 summary_logit_churn <- summary(logit_churn_allvars)
@@ -4376,7 +4343,7 @@ print(summary_logit_churn)
         \paragraph{Question}
         \textit{Use the logistic regression from 2c) to predict \Rcode{churn}. Evaluate the predictions in an appropriate way. Are the predictions improved if you remove some variables from the model?}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={2d: Evaluate Logistic Regression (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 # Assuming logit_churn_allvars from 2c (fitted on train_churn) and test_churn
 probs_logit_test_churn <- predict(logit_churn_allvars, newdata=test_churn, type="response")
 # Default threshold 0.5 for initial evaluation
@@ -4416,7 +4383,7 @@ print(conf_matrix_logit_reduced_05)
         \paragraph{Question}
         \textit{Use a random forest to predict \Rcode{churn} and evaluate the predictions. (If computations are too slow, reduce \Rcode{ntree} or use smaller training data.)}
         \paragraph{Base R Solution (using \Rpackage{randomForest})}
-\begin{lstlisting}[caption={2e: Random Forest for churn (Churn) - Base R (Exam 2023)}]
+\begin{lstlisting}
 library(randomForest)
 # Assuming train_churn, test_churn from 1a
 set.seed(86554354) % \textit{(Consistent seed)} %
@@ -4491,8 +4458,7 @@ f <- function(x0, x, y, K=3) {
         \paragraph{Question}
         \textit{Consider the following small dataset: x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], y = [5.26, 9.13, 11.17, 15.64, 25.32, 25.55, 41.39, 48.17, 58.65, 68.24]. Use leave-one-out cross-validation (LOOCV) to determine the optimal K in the function \Rcode{f} for this dataset.}
         \paragraph{Base R Solution (basert på løsningsforslag)}
-\begin{lstlisting}[caption={1b: LOOCV for Optimal K - Base R (Exam 2024)}]
-# Dataset
+\begin{lstlisting}
 x_1b <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 y_1b <- c(5.26, 9.13, 11.17, 15.64, 25.32, 25.55, 41.39, 48.17, 58.65, 68.24)
 n_1b <- length(x_1b)
@@ -4542,7 +4508,7 @@ cat("Optimal K found by LOOCV:", optimal_K_1b, "\n")
         \paragraph{Question}
         \textit{Plot $y$ against $x$ and add a line with the predictions based on the optimal $K$.}
         \paragraph{Base R Solution}
-\begin{lstlisting}[caption={1c: Plot with Optimal K Predictions - Base R (Exam 2024)}]
+\begin{lstlisting}
 # Assuming x_1b, y_1b from 1b, and optimal_K_1b = 5
 optimal_K_plot <- 5 
 predictions_1c <- numeric(n_1b)
@@ -4627,7 +4593,7 @@ legend("topleft", legend=paste("Fit with K =", optimal_K_plot), col="red", lty=1
         \paragraph{Question}
         \textit{If necessary, recode categorical variables as factors. Motivate your choices in words. (Implicit: Split data for training/testing as per general instructions and solution PDF structure for this exam).}
         \paragraph{Base R Solution (based on solution PDF)}
-\begin{lstlisting}[caption={2a: Recode Categoricals & Split (airline) - Base R (Exam 2024)}]
+\begin{lstlisting}
 airline <- read.csv("airline.csv", stringsAsFactors = FALSE) % \textit{Read data} %
 # Convert 'satisfaction' to factor (assuming 'satisfied' vs 'dissatisfied' for classification)
 # This step depends on how 'satisfaction' is defined in the original CSV.
@@ -4654,7 +4620,7 @@ test_airline <- airline[-train_idx_airline, ]
 # sapply(training_airline, class)
 \end{lstlisting}
         \paragraph{Tidyverse Solution}
-\begin{lstlisting}[caption={2a: Recode Categoricals & Split (airline) - Tidyverse (Exam 2024)}]
+\begin{lstlisting}
 library(dplyr)
 airline_tidy <- read.csv("airline.csv", stringsAsFactors = FALSE) %>%
   mutate(across(where(~length(unique(.)) <= 7 & !is.factor(.)), as.factor))
@@ -4687,7 +4653,7 @@ test_airline_tidy <- airline_tidy[-train_idx_airline_tidy, ]
         \paragraph{Question}
         \textit{Use descriptive statistics to find variables associated with \Rcode{satisfaction}. First, explain which type of descriptive statistics (types of tables and figures) that you are using. Give examples of R code but do not show all code and output if you are doing the same thing many times. Summarize your results as text, mentioning the relevant numbers.}
         \paragraph{Base R Solution (Conceptual based on exam solution)}
-\begin{lstlisting}[caption={2c: Descriptives for Satisfaction (airline) - Base R (Exam 2024)}]
+\begin{lstlisting}
 # Assuming training_airline from 2a. Assume 'satisfaction' is a binary factor ("satisfied", "dissatisfied").
 # Overall satisfaction rate:
 # print(prop.table(table(training_airline$satisfaction))) # e.g., 55% satisfied
@@ -4718,7 +4684,7 @@ proptab_satisfaction <- function(data, predictor_col_name) {
 # - Flight_Distance, Delays: No strong or obvious association with overall satisfaction from boxplots/summaries.
 \end{lstlisting}
         \paragraph{Tidyverse Solution (Conceptual)}
-\begin{lstlisting}[caption={2c: Descriptives for Satisfaction (airline) - Tidyverse (Exam 2024)}]
+\begin{lstlisting}
 # library(dplyr); library(ggplot2)
 # Assuming training_airline_tidy from 2a.
 # training_airline_tidy %>% count(satisfaction) %>% mutate(prop = n/sum(n))
@@ -4878,13 +4844,13 @@ knn_func_t1d <- function(x0, x, y, K=20) { % \textit{Note: Exercise sheet has K=
 
         \subsubsection{Task 2: Data Splitting and Basic Linear Model}
             \paragraph{2a: Load, Summarize, Help for \Robject{College}}
-\begin{lstlisting}[caption={Loading College Data (Ex Set 1, T2a)}]
+\begin{lstlisting}
 library(ISLR)
 # summary(College)
 # help(College)
 \end{lstlisting}
             \paragraph{2b: 50/50 Training/Test Split}
-\begin{lstlisting}[caption={Train/Test Split (Ex Set 1, T2b)}]
+\begin{lstlisting}
 set.seed(123)
 n_college <- nrow(College)
 train_indicator_college <- sample(1:n_college, size=floor(n_college/2))
@@ -4892,25 +4858,25 @@ train_college <- College[train_indicator_college,]
 test_college <- College[-train_indicator_college,]
 \end{lstlisting}
             \paragraph{2c: Fit Linear Model for \Rcode{Apps ~ Private + Accept}}
-\begin{lstlisting}[caption={Linear Model for Apps (Ex Set 1, T2c)}]
+\begin{lstlisting}
 lm_apps_t2c <- lm(Apps ~ Private + Accept, data=train_college)
 # summary(lm_apps_t2c)
 \end{lstlisting}
             \paragraph{2d: Compute Training MSE}
-\begin{lstlisting}[caption={Training MSE (Ex Set 1, T2d)}]
+\begin{lstlisting}
 pred_train_t2d <- predict(lm_apps_t2c, newdata=train_college)
 mse_train_t2d <- mean((train_college$Apps - pred_train_t2d)^2)
 # print(mse_train_t2d) % \textit{Solution shows 1437492} %
 \end{lstlisting}
             \paragraph{2e: Model with \Rcode{Accept} only, compute Training MSE}
-\begin{lstlisting}[caption={Reduced Linear Model and Training MSE (Ex Set 1, T2e)}]
+\begin{lstlisting}
 lm_apps_t2e <- lm(Apps ~ Accept, data=train_college)
 pred_train_t2e <- predict(lm_apps_t2e, newdata=train_college)
 mse_train_t2e <- mean((train_college$Apps - pred_train_t2e)^2)
 # print(mse_train_t2e) % \textit{Solution shows 1440012, larger than 2d, as expected} %
 \end{lstlisting}
             \paragraph{2f: Compute Test MSE for models from 2c and 2e}
-\begin{lstlisting}[caption={Test MSE for both models (Ex Set 1, T2f)}]
+\begin{lstlisting}
 pred_test_t2c <- predict(lm_apps_t2c, newdata=test_college)
 mse_test_t2c <- mean((test_college$Apps - pred_test_t2c)^2)
 # print(paste("Test MSE (Private + Accept):", mse_test_t2c)) % \textit{Sol: 1849668} %
@@ -4921,7 +4887,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # Model with Private + Accept has slightly better test MSE here.
 \end{lstlisting}
             \paragraph{2h: KNN for \Rcode{Apps ~ Accept}, compare Test MSE}
-\begin{lstlisting}[caption={KNN for Apps (Ex Set 1, T2h)}]
+\begin{lstlisting}
 # Using knn_func_t1d from earlier, assuming K=3 as per solution's use of it
 # Need to apply it for each test observation
 # x0_knn_t2h <- test_college$Accept
@@ -4936,7 +4902,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
         \subsubsection{Task 3: Exercise 3.10a-f from ISLR Book}
             \textit{This task involves fitting and interpreting a multiple linear regression model for \Rcode{Sales ~ Price + Urban + US} on the \Rpackage{ISLR}::\Robject{Carseats} dataset. Steps include fitting, interpreting coefficients, identifying significant predictors, and comparing models.}
-\begin{lstlisting}[caption={ISLR 3.10a-f (Conceptual - Ex Set 1, T3)}]
+\begin{lstlisting}
 # library(ISLR)
 # data(Carseats)
 # (a) Fit model
@@ -4967,7 +4933,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
         \subsubsection{Task 1: Logistic Regression and KNN for Binary Classification}
             \paragraph{Context} Small dataset (x=1:7, y binary).
             \paragraph{1a: Fit Logistic Regression, predict for x0=4}
-\begin{lstlisting}[caption={Logistic Regression Basics (Ex Set 2, T1a)}]
+\begin{lstlisting}
 # x_t2 <- 1:7; y_t2 <- c(0,1,0,1,1,1,1)
 # data_t2 <- data.frame(x=x_t2, y=as.factor(y_t2)) % \textit{Ensure y is factor for glm binomial} %
 # m1_t2 <- glm(y ~ x, data=data_t2, family="binomial")
@@ -4976,13 +4942,13 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # For x0=4: predict(m1_t2, newdata=data.frame(x=4), type="response") % Sol: 0.8628, predict Y=1 %
 \end{lstlisting}
             \paragraph{1b: Plot probabilities from Logistic Regression}
-\begin{lstlisting}[caption={Plotting Logistic Probabilities (Ex Set 2, T1b)}]
+\begin{lstlisting}
 # plot(x_t2, as.numeric(y_t2)-1, ylab="P(Y=1) or Y") # Plot 0/1 Y values
 # probs_m1_t2 <- predict(m1_t2, type="response")
 # lines(x_t2, probs_m1_t2, col="blue")
 \end{lstlisting}
             \paragraph{1c: KNN probability estimation for x0=4 with K=1,3,5}
-\begin{lstlisting}[caption={KNN Probabilities (Ex Set 2, T1c)}]
+\begin{lstlisting}
 # knn_prob_t2 <- function(x0, x_train, y_train, K_val) {
 #   d <- abs(x_train - x0)
 #   o <- order(d)[1:K_val]
@@ -4993,7 +4959,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # knn_prob_t2(4, x_t2, data_t2$y, K=5) % Sol: mean(y at x=2,3,4,5,6)=mean(c(1,0,1,1,1))=0.8 %
 \end{lstlisting}
             \paragraph{1d: Plot KNN probabilities for K=1,3,5 and logistic}
-\begin{lstlisting}[caption={Plotting All Probabilities (Ex Set 2, T1d)}]
+\begin{lstlisting}
 # plot(x_t2, as.numeric(data_t2$y)-1, ylab="P(Y=1) or Y", xlab="x")
 # for (K_val_plot in c(1,3,5)) {
 #   probs_knn_plot <- sapply(x_t2, knn_prob_t2, x_train=x_t2, y_train=data_t2$y, K_val=K_val_plot)
@@ -5004,7 +4970,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 #        col=c("blue", 2, 3, 4), lty=c(1,2,3,4))
 \end{lstlisting}
             \paragraph{1e: Confusion matrices for logistic and KNN (K=3)}
-\begin{lstlisting}[caption={Confusion Matrices (Ex Set 2, T1e)}]
+\begin{lstlisting}
 # Logistic predictions (threshold 0.5)
 # pred_log_t2e <- ifelse(probs_m1_t2 > 0.5, 1, 0)
 # table(Actual=as.numeric(data_t2$y)-1, Predicted=pred_log_t2e)
@@ -5020,7 +4986,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
         \subsubsection{Task 3: Logistic Regression vs LDA (\Robject{Default} data)}
             \paragraph{3a: Fit Logistic and LDA, 50/50 split}
-\begin{lstlisting}[caption={Logistic vs LDA (Ex Set 2, T3a)}]
+\begin{lstlisting}
 # library(ISLR); library(MASS)
 # data(Default)
 # Default$default_numeric <- ifelse(Default$default == "Yes", 1, 0) % \textit{Make numeric for comparison} %
@@ -5039,7 +5005,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # head(data.frame(LogRegProb=prob_logreg_def_test, LDAProb=prob_lda_def_test))
 \end{lstlisting}
             \paragraph{3b: Predict test data, confusion matrices. Remove variables?}
-\begin{lstlisting}[caption={Evaluate Logistic & LDA (Ex Set 2, T3b)}]
+\begin{lstlisting}
 # threshold <- 0.5
 # pred_log_class <- ifelse(prob_logreg_def_test > threshold, "Yes", "No")
 # conf_log <- table(Actual=test_def$default, Predicted=pred_log_class)
@@ -5103,7 +5069,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
         \subsubsection{Task 1: Shrinkage Methods (\Robject{College} data)}
             \textit{Predict \Rcode{Apps} using \Rcode{Accept, Top10perc, Expend}. Compare OLS, Ridge, Lasso.}
             \paragraph{1a: Compare OLS, Ridge, Lasso for different $\lambda$s}
-\begin{lstlisting}[caption={Shrinkage Comparison (Ex Set 3, T1a)}]
+\begin{lstlisting}
 # library(ISLR2); library(glmnet)
 # xdata_t3 <- subset(College, select=c("Apps", "Accept", "Top10perc", "Expend"))
 # x_mat_t3 <- as.matrix(xdata_t3[,-1])
@@ -5132,13 +5098,13 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # lambda_lasso_opt_t3 <- cv_lasso_t3$lambda.min
 \end{lstlisting}
             \paragraph{1c: Re-estimate with optimal $\lambda$, compare coefficients}
-\begin{lstlisting}[caption={Re-estimate and Compare Coefs (Ex Set 3, T1c)}]
+\begin{lstlisting}
 # ridge_opt_t3 <- glmnet(x_mat_t3, y_vec_t3, alpha=0, lambda=lambda_ridge_opt_t3)
 # lasso_opt_t3 <- glmnet(x_mat_t3, y_vec_t3, alpha=1, lambda=lambda_lasso_opt_t3)
 # print(cbind(OLS=coef_ols_t3, Ridge=coef(ridge_opt_t3), Lasso=coef(lasso_opt_t3)))
 \end{lstlisting}
             \paragraph{1d: Evaluate OLS, Ridge, Lasso by testMSE (validation set)}
-\begin{lstlisting}[caption={Test MSE Comparison (Ex Set 3, T1d)}]
+\begin{lstlisting}
 # n_t3 <- nrow(xdata_t3)
 # set.seed(1) % (Assume a seed) %
 # ind_t3 <- sample(1:n_t3, size=floor(n_t3/2))
@@ -5161,7 +5127,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
             \textit{Polynomial regression vs. regression splines.}
             \paragraph{2a: Plot y against x}
             \paragraph{2b: Polynomial regression K=7, plot predictions}
-\begin{lstlisting}[caption={Polynomial Regression (Ex Set 3, T2b)}]
+\begin{lstlisting}
 # x_t3_task2 <- 1:8
 # y_t3_task2 <- c(8.88, 4.54, 5.12, 1.14, 2.26, 8.43, 10.92, 14.47)
 # data_t3_task2 <- data.frame(x=x_t3_task2, y=y_t3_task2)
@@ -5170,21 +5136,21 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # lines(data_t3_task2$x, predict(poly7_t3), col="red") % (Perfect fit as N=P) %
 \end{lstlisting}
             \paragraph{2c: Regression spline (manual basis) with knots at 3, 6. Plot.}
-\begin{lstlisting}[caption={Manual Regression Spline (Ex Set 3, T2c)}]
+\begin{lstlisting}
 # h_func <- function(x, xi) pmax((x-xi)^3, 0)
 # spline_manual_t3 <- lm(y ~ x + I(x^2) + I(x^3) + h_func(x,3) + h_func(x,6), data=data_t3_task2)
 # lines(data_t3_task2$x, predict(spline_manual_t3), col="blue")
 # % (Expect worse predictions for new x than poly7, especially outside [1,8]) %
 \end{lstlisting}
             \paragraph{2d: Regression spline with \Rfunction{bs} (knots 3,6). Compare preds.}
-\begin{lstlisting}[caption={bs() Spline (Ex Set 3, T2d)}]
+\begin{lstlisting}
 # library(splines)
 # spline_bs_t3 <- lm(y ~ bs(x, knots=c(3,6)), data=data_t3_task2)
 # lines(data_t3_task2$x, predict(spline_bs_t3), col="green")
 # % (Predictions should be identical to 2c if basis is equivalent, which it is for cubic) %
 \end{lstlisting}
             \paragraph{2e: LOOCV for different knot placements}
-\begin{lstlisting}[caption={LOOCV for Knots (Ex Set 3, T2e)}]
+\begin{lstlisting}
 # testMSE_spline <- function(knot1, knot2, x_data, y_data) {
 #   # ... (LOOCV loop as in earlier examples, fitting lm with bs(x, knots=c(knot1,knot2))) ...
 #   return(mean_SE_from_LOOCV)
@@ -5198,7 +5164,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
             \paragraph{3a: Properties of weights $w_i$} (Sum to 1, large $w_i$ for small $|x_i-x_0|$).
             \paragraph{3b: Implement KNN as weighted average (\Rcode{knn2})}
             \paragraph{3c: Modify knn2 to Nadaraya-Watson nw), plot for different $h$.}
-\begin{lstlisting}[caption={Nadaraya-Watson (Ex Set 3, T3c)}]
+\begin{lstlisting}
 # weight_nw <- function(x0, x_vec, h_val=0.2) dnorm((x_vec-x0)/h_val) / sum(dnorm((x_vec-x0)/h_val))
 # nw_func <- function(x0, x_vec, y_vec, h_val=0.2) {
 #   w <- weight_nw(x0, x_vec, h_val)
@@ -5219,7 +5185,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
         \subsubsection{Task 1 : Regression Trees (\Robject{Hitters} data)}
             \textit{Predict \Rcode{logSalary} using \Rcode{Hits} and \Rcode{Years}.}
             \paragraph{1a: Explain RSS function and \Rfunction{optimise} for first split.}
-\begin{lstlisting}[caption={RSS function for Tree Split (Ex Set 4, T1a)}]
+\begin{lstlisting}
 # library(ISLR); data(Hitters)
 # Hitters <- Hitters[!is.na(Hitters$Salary),]
 # Hitters$logSalary <- log(Hitters$Salary)
@@ -5239,7 +5205,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # # Years gives lower RSS, so first split is on Years < 4.5
 \end{lstlisting}
             \paragraph{1b: Fit tree with \Rfunction{tree}, plot. Compare first split.}
-\begin{lstlisting}[caption={Fit and Plot Tree (Ex Set 4, T1b)}]
+\begin{lstlisting}
 # library(tree)
 # tree1_t4 <- tree(logSalary ~ Hits + Years, data=Hitters)
 # plot(tree1_t4); text(tree1_t4, pretty=0)
@@ -5248,7 +5214,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
             \paragraph{1c: Predict for new observation (Hits=125, Years=2.5)}
             \textit{Follow path in tree1\_t4: Years=2.5 (<4.5) -> Left. Hits=125 (>114 if that's next split) -> Right in subtree. Read leaf value. Sol: 5.264}
             \paragraph{1d: Fit tree with all predictors }
-\begin{lstlisting}[caption={Tree with All Predictors and RSS (Ex Set 4, T1d)}]
+\begin{lstlisting}
 # tree2_t4 <- tree(logSalary ~ . - Salary, data=Hitters) # Exclude original Salary
 # summary(tree1_t4) % RSS is deviance: 69.06 for tree1 %
 # summary(tree2_t4) % RSS is deviance: 43.03 for tree2 (lower as expected) %
@@ -5259,7 +5225,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
         \subsubsection{Task 2: Bagging and Random Forest (\Robject{Hitters} data)}
             \textit{Benchmark: \Rcode{tree2} from T1d.}
             \paragraph{2a: TestMSE for \Rcode{tree2} (validation set)}
-\begin{lstlisting}[caption={Test MSE for tree2 (Ex Set 4, T2a)}]
+\begin{lstlisting}
 # set.seed(123)
 # n_hit <- nrow(Hitters)
 # ind_hit <- sample(1:n_hit, size=floor(n_hit/2))
@@ -5269,7 +5235,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # mse2_test_t4 <- mean((test_hit$logSalary - pred2_test_t4)^2) % Sol: 0.428 %
 \end{lstlisting}
             \paragraph{2b: Bagging of \Rcode{tree2}. Variable Importance.}
-\begin{lstlisting}[caption={Bagging and VarImp (Ex Set 4, T2b)}]
+\begin{lstlisting}
 # library(randomForest)
 # set.seed(123) % (Ensure consistent seed for RF if comparing) %
 # # For bagging, mtry = number of predictors (19 for Hitters excluding Salary, logSalary)
@@ -5282,7 +5248,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 #    averaged over all trees. CRuns most important. %
 \end{lstlisting}
             \paragraph{2c: Random Forest. How is it an extension of bagging?}
-\begin{lstlisting}[caption={Random Forest (Ex Set 4, T2c)}]
+\begin{lstlisting}
 # library(randomForest)
 # set.seed(123)
 # rf_t4 <- randomForest(logSalary ~ . - Salary, data=train_hit, mtry=3, importance=TRUE) % (mtry=3 from solution) %
@@ -5294,7 +5260,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
         \subsubsection{Task 3: Boosting (\Robject{Hitters} data)}
             \textit{Predict \Rcode{logSalary} with boosted tree. Compute testMSE.}
-\begin{lstlisting}[caption={Boosting (Ex Set 4, T3)}]
+\begin{lstlisting}
 # library(gbm)
 # # Using train_hit, test_hit from 2a
 # set.seed(123)
@@ -5310,7 +5276,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
             \paragraph{4a: Possible to find maximal marginal classifier from plot?} (No, classes overlap).
             \paragraph{4b: Recreate plot from `xy.csv`.}
             \paragraph{4c: Use SVC (linear kernel) to classify. Plot.}
-\begin{lstlisting}[caption={SVC (Ex Set 4, T4c)}]
+\begin{lstlisting}
 # xy_data_t4 <- read.csv("xy.csv") 
 # names(xy_data_t4) <- c("x1", "x2", "y_class") % (Assuming column names) %
 # xy_data_t4$y_factor <- as.factor(xy_data_t4$y_class)
@@ -5321,7 +5287,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 \end{lstlisting}
             \paragraph{4d: Meaning of tuning parameter C=10.} (Allows for some misclassifications/margin violations, controls trade-off between margin width and violations. Larger C = narrower margin, fewer violations).
             \paragraph{4e: SVM with polynomial kernel. Better separation?}
-\begin{lstlisting}[caption={SVM Polynomial Kernel (Ex Set 4, T4e)}]
+\begin{lstlisting}
 # svmfit_poly_t4 <- svm(y_factor ~ x1 + x2, data=xy_data_t4, kernel="polynomial", 
 #                       cost=10, scale=FALSE) % (Default degree=3) %
 # plot(svmfit_poly_t4, xy_data_t4, x2 ~ x1)
@@ -5331,7 +5297,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
         \subsubsection{Task 5: PCA (\Robject{advertising.csv})}
             \textit{PCA on TV, radio, newspaper. Interpret first two PCs from loadings.}
-\begin{lstlisting}[caption={PCA (Ex Set 4, T5a)}]
+\begin{lstlisting}
 # advertising_t5 <- read.csv("advertising.csv")[, c("TV", "radio", "newspaper")]
 # pca_t5 <- prcomp(advertising_t5, scale.=TRUE, center.=TRUE)
 # summary(pca_t5)
@@ -5343,7 +5309,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
         \subsubsection{Task 6: Cluster Analysis (\Robject{USArrests} data)}
             \paragraph{6a: K-means clustering (K=3) on Murder, Assault. Plot.}
-\begin{lstlisting}[caption={K-Means Clustering (Ex Set 4, T6a)}]
+\begin{lstlisting}
 # data(USArrests)
 # x_km_t6 <- scale(USArrests[, c("Murder", "Assault")]) # Scale data
 # set.seed(1) % (For reproducibility of kmeans) %
@@ -5353,7 +5319,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 # text(x_km_t6, labels=rownames(USArrests), col=km3_t6$cluster, pos=3, cex=0.7)
 \end{lstlisting}
             \paragraph{6b: Hierarchical clustering. Compare.}
-\begin{lstlisting}[caption={Hierarchical Clustering (Ex Set 4, T6b)}]
+\begin{lstlisting}
 # Using scaled data x_km_t6 from above
 # dist_t6 <- dist(x_km_t6)
 # hclust_complete_t6 <- hclust(dist_t6, method="complete")
@@ -5369,7 +5335,7 @@ mse_test_t2e <- mean((test_college$Apps - pred_test_t2e)^2)
 
     \subsection{Initial Data Loading and Preparation}
         \paragraph{Loading Packages and Data}
-\begin{lstlisting}[caption={Loading necessary packages and the ceosal2 dataset}]
+\begin{lstlisting}
 # Ensure wooldridge is installed: install.packages("wooldridge")
 library(wooldridge)
 library(dplyr)     # For tidyverse data manipulation
@@ -5424,7 +5390,7 @@ test_t1  <- ceosal_task1_filtered[-train_indices,]
 \end{lstlisting}
 
             \subparagraph{Descriptive Statistics for \Rcode{lsalary} (on \Rcode{train\_t1})}
-\begin{lstlisting}[caption={Descriptive statistics for lsalary (Task 1)}]
+\begin{lstlisting}
 # Base R
 summary(train_t1$lsalary)
 hist(train_t1$lsalary, main="Histogram of log(Salary) - Training Data", xlab="log(Salary)", col="lightblue", breaks=12)
@@ -5441,7 +5407,7 @@ boxplot(train_t1$lsalary, main="Boxplot of log(Salary) - Training Data", ylab="l
             \textit{Interpretation: Comment on the distribution of \Rcode{lsalary} - is it symmetric, skewed, any outliers? The log transformation often makes salary data more symmetric.}
 
             \subparagraph{Investigating Promising Predictors for \Rcode{lsalary} (on \Rcode{train\_t1})}
-\begin{lstlisting}[caption={Plotting lsalary against other predictors (Task 1)}]
+\begin{lstlisting}
 # Base R (as in solution)
 # par(mfrow=c(3,3)) # Adjust layout based on number of predictors remaining
 # plot(lsalary ~ ., data=train_t1) 
@@ -5478,7 +5444,7 @@ boxplot(train_t1$lsalary, main="Boxplot of log(Salary) - Training Data", ylab="l
         \paragraph{Solution}
             \textit{We use \Rcode{train\_t1} and \Rcode{test\_t1} from the end of Task 1 preparation.}
             \subparagraph{OLS with All Predictors}
-\begin{lstlisting}[caption={OLS with all predictors (Task 2)}]
+\begin{lstlisting}
 ols_model_all <- lm(lsalary ~ ., data=train_t1)
 # summary(ols_model_all) # For coefficient details
 
@@ -5488,7 +5454,7 @@ cat("Test MSE (OLS All Predictors):", ols_all_mse_test, "\n")
 # Solution had Test MSE = 0.3044908
 \end{lstlisting}
             \subparagraph{OLS with \Rcode{lsales} Only}
-\begin{lstlisting}[caption={OLS with lsales only (Task 2)}]
+\begin{lstlisting}
 ols_model_lsales <- lm(lsalary ~ lsales, data=train_t1)
 # summary(ols_model_lsales)
 
@@ -5500,7 +5466,7 @@ cat("Test MSE (OLS lsales Only):", ols_lsales_mse_test, "\n")
             \textit{Comment: The test MSEs are very similar, suggesting \Rcode{lsales} captures most of the predictive power. The solution mentions LOOCV for a more robust comparison, where the \Rcode{lsales}-only model was better.}
 
             \subparagraph{LASSO Regression}
-\begin{lstlisting}[caption={LASSO regression (Task 2)}]
+\begin{lstlisting}
 library(glmnet)
 # Prepare matrices for glmnet (factors need to be dummified)
 # 'grad' is the only factor in train_t1/test_t1
@@ -5532,7 +5498,7 @@ cat("Test MSE (LASSO):", lasso_mse_test_t2, "\n")
         \paragraph{Solution}
             \textit{The assignment solution uses LOOCV on the full processed dataset (\Rcode{ceosal\_final\_filtered}) to determine K. For strictness, K should be determined using only the training portion (\Rcode{train\_t1}) or an inner CV loop if the final evaluation is on \Rcode{test\_t1}. We follow the provided solution's approach for K determination for comparability with its results.}
             \subparagraph{Determine Optimal K using LOOCV}
-\begin{lstlisting}[caption={KNN: Determine K using LOOCV (Task 3)}]
+\begin{lstlisting}
 # Using ceosal_final_filtered from Task 1 for LOOCV to find K
 # (This uses data that will also be in the "test" part of the original 50/50 split)
 knn_reg_func_t3 <- function(x0, x_train_vec, y_train_vec, K_val) {
