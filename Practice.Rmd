@@ -206,6 +206,16 @@ StudentDefault
 print("____________")
 exp(0.4)
 
+
+```
+
+```{r }
+print(
+  
+## Propbability  
+  (exp(-3.5041+0.4049*1))/
+    (1+ exp(-3.5041+0.4049*1))
+      )
 ```
 
 ## Logistic Regression and Confussion Matrix
@@ -273,7 +283,7 @@ print(accuracy_test)
 
 ```
 
-## Log Regression on Weekly Data
+## Multiple Log Regression on Weekly Data
 
 ```{r }
 
@@ -321,7 +331,6 @@ accuracy <- mean(glm.pred == Weekly$Direction)
 print(accuracy)
 
 ```
-
 ## LDA on Default Data 
 
 ```{r }
@@ -745,8 +754,7 @@ mean_cv_error_10fold <- mean(cv_errors)
 
 # Print final averaged 10-fold CV classification error
 print(mean_cv_error_10fold)
-
-
+ 
 ```
 
 
