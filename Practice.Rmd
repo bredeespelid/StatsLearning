@@ -1,0 +1,752 @@
+---
+title: "Practice"
+output:
+  pdf_document: default
+  html_document: default
+date: "2025-05-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+#install.packages("tinytex")
+
+## 50/50 Split
+
+
+```{r Splitting data}
+
+# Creates a sequence of integers from 1 to 20
+dataseq <- c(seq(20))
+
+# Reshapes the sequence into a 5x4 matrix
+mydata <- matrix(dataseq, nrow = 5, ncol = 4)
+
+# Stores the number of rows (observations) in the matrix
+n <- nrow(mydata)
+
+# Sets the random seed to ensure reproducibility of the sampling
+set.seed(123)
+
+# Randomly selects floor(n/2) row indices for training data
+train_indicies <- sample(1:n, floor(n / 2))
+
+# Extracts the training subset based on sampled indices
+train_data <- mydata[train_indicies, ]
+
+# Extracts the remaining rows as the test subset
+test_data <- mydata[-train_indicies, ]
+
+# Prints the training data
+print(train_data)
+
+# Prints the test data
+print(test_data)
+
+```
+## Simple Linear Regression in R 
+```{r  Plots linear regression}
+library(ISLR)
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+
+ggplot(data = Auto, aes(x = horsepower, y = mpg)) +
+  geom_point()+
+  theme_minimal()+
+  geom_smooth(method= "lm", se= F, col= "red")
+```
+
+
+```{r  LM-Fit}
+lm.fit<- lm(mpg ~ horsepower, data = Auto)
+
+summary(lm.fit)
+```
+```{r  Plots Base R}
+plot(Auto$horsepower, Auto$mpg)
+abline(lm.fit, col ="red", lwd=3)
+```
+
+## Manual estimation of linear regression coefficients using the ordinary least squares (OLS) formula
+
+```{r  Manually Calculate Coefficients}
+
+# Constructs the design matrix X with an intercept (column of 1s) and 'horsepower' as the explanatory variable
+X_design <- cbind(1, Auto$horsepower)
+
+# Defines the response variable y as miles per gallon (mpg)
+y_response <- Auto$mpg
+
+# Manually computes the OLS coefficients using the formula: (XX)^(-1) X^T*y
+beta_hat_manual <- solve(t(X_design) %*% X_design) %*% t(X_design) %*% y_response
+
+# Prints the estimated regression coefficients
+print(beta_hat_manual)
+
+```
+
+## Multiple Linear Regression for Boston Housing Data
+
+```{r   Multiple Linear Regression}
+
+library(MASS)
+
+lm.fit.multi <- lm(medv ~ lstat + age, data = Boston)
+summary(lm.fit.multi)
+lm.fit.all <- lm(medv ~ ., data = Boston)
+summary(lm.fit.all)
+
+```
+
+## Confidence and Prediction Intervals in R
+
+```{r }
+
+# Create a new data frame with specific horsepower values
+new_hp_values <- data.frame(horsepower = c(98, 150, 200))
+
+# Predict the expected MPG for these horsepower values with 95% confidence intervals
+predict(lm.fit, newdata = new_hp_values, interval = "confidence")
+
+# Predict the MPG for individual cars with these horsepower values, including 95% prediction intervals
+predict(lm.fit, newdata = new_hp_values, interval = "prediction")
+
+```
+## Checking VIF in R <- Variance Inflation Factor
+
+
+```{r }
+
+library(car)
+vif_values <- vif(lm.fit.all)
+print(vif_values)
+
+# VIF values indicate low to moderate multicollinearity for most predictors, 
+# except 'rad' and 'tax', which show high multicollinearity and should be examined further.
+
+```
+
+## Conseptual KNN
+
+```{r }
+
+# Define a function to perform a single KNN prediction
+knn_function_single_pred <- function(x0, x_train, y_train, K_val = 20) {
+  # Calculate the absolute distances between the target point (x0) and all training points (x_train)
+  distances <- abs(x_train - x0)
+  # Get the indices that would sort the distances in ascending order
+  ordered_indices <- order(distances)
+  # Select the indices of the K_val nearest neighbors
+  neighbor_indices <- ordered_indices[1:K_val]
+  # Predict the y value by taking the mean of the y_train values for the K_val nearest neighbors
+  predicted_y <- mean(y_train[neighbor_indices])
+  # Return the predicted y value
+  return(predicted_y)
+}
+
+# Load the ISLR package, which contains the Auto dataset
+library(ISLR)
+# Load the Auto dataset into the current R session
+data(Auto)
+
+# Create a sorted vector of horsepower values from the Auto dataset
+x_values_sorted <- sort(Auto$horsepower)
+# Apply the knn_function_single_pred to each value in x_values_sorted to get KNN predictions
+y_predictions_knn <- sapply(x_values_sorted, function(x0) {
+  # For each x0 in x_values_sorted, call the KNN prediction function
+  
+  knn_function_single_pred(x0, x_train = Auto$horsepower, y_train = Auto$mpg, K_val = 5)
+  # Use Auto$horsepower as the training x values
+  # Use Auto$mpg as the training y values
+  # Set the number of neighbors (K) to 5
+})
+
+# Create a scatter plot of horsepower vs. mpg from the Auto dataset
+plot(Auto$horsepower, Auto$mpg, xlab="Horsepower", ylab="MPG", main="KNN Regression (K=5)")
+# Add a line to the plot representing the KNN predictions
+lines(x_values_sorted, y_predictions_knn, col = "blue", lwd = 2)
+
+```
+
+## Linear Probability Model
+
+
+```{r }
+
+library(ISLR)
+
+df <- Default
+df$y <- ifelse(df$default == "Yes", 1, 0)
+
+head(df)
+```
+
+```{r }
+
+linprob <- lm(y ~balance, data = df)
+summary(linprob)
+```
+
+```{r }
+plot(df$balance, df$y)
+abline(linprob, col = "red")
+
+```
+
+
+##LogIT
+
+```{r }
+StudentDefault <- glm(default ~ student, family = "binomial", data = Default)
+StudentDefault
+
+#The odds are
+print("____________")
+exp(0.4)
+
+```
+
+## Logistic Regression and Confussion Matrix
+
+```{r }
+# Fit a logistic regression model predicting default based on student status, balance, and income
+logprob <- glm( default ~ student + balance + income, data = Default, family = "binomial")
+
+# Predict the probability of default using the fitted model
+pred_probs <- predict(logprob, type = "response")
+
+# Convert predicted probabilities to class labels: "Yes" if > 0.5, else "No"
+pred_class <- ifelse(pred_probs > 0.5, "Yes", "No")
+
+# Create a confusion matrix comparing actual vs. predicted default values
+conf_matrix_full <- table(Default$default, pred_class)
+
+# Print the confusion matrix
+print(conf_matrix_full)
+
+```
+## Example with test/train data -- Logistic Regression and Confussion Matrix
+
+
+```{r }
+# Set a seed for reproducibility of the random sampling
+set.seed(123)
+
+# Get the number of observations in the dataset
+n <- nrow(Default)
+
+# Randomly select half of the indices for the training set
+train_indicies <- sample(1:n, n/2)
+
+# Create the training dataset using the sampled indices
+train_data <- Default[train_indicies,]
+
+# Create the test dataset using the remaining indices
+test_data <- Default[-train_indicies,]
+
+# Fit a logistic regression model on the training data
+logprob_train <- glm(default ~ student + balance + income, data = train_data, family="binomial")
+
+# Predict default probabilities on the test data
+pred_probs_test <- predict(logprob_train, newdata = test_data, type="response")
+
+# Convert probabilities to class labels: "Yes" if > 0.5, otherwise "No"
+pred_class_test <- ifelse(pred_probs_test > 0.5, "Yes", "No")
+
+# Create a confusion matrix comparing actual vs. predicted defaults in test data
+conf_matrix_test <- table(test_data$default, pred_class_test)
+
+# Print the confusion matrix
+print(conf_matrix_test)
+
+
+```
+
+```{r }
+# Calculate accuracy by dividing correct predictions by total predictions
+accuracy_test <- sum(diag(conf_matrix_test)) / sum(conf_matrix_test)
+
+# Print the test set accuracy
+print(accuracy_test)
+
+```
+
+## Log Regression on Weekly Data
+
+```{r }
+
+# Load the ISLR package, which contains the 'Weekly' dataset and other resources
+library(ISLR)
+
+# Fit a logistic regression model to predict 'Direction' using lagged returns and trading volume
+# The response variable is binary ("Up" or "Down"), so we use the binomial family
+glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, 
+               data = Weekly, 
+               family = "binomial")
+
+# Display a detailed summary of the fitted logistic regression model
+# Includes coefficient estimates, standard errors, z-values, and p-values
+summary(glm.fit)
+
+```
+## Conf Matrix on Weekly Data
+
+```{r }
+
+# Predict probabilities of the "Up" direction using the logistic regression model (glm.fit)
+glm.probs <- predict(glm.fit, type = "response")
+
+# Initialize a vector of predictions with the default class "Down"
+glm.pred <- rep("Down", length(glm.probs))
+
+# Assign the class "Up" to all predictions where the predicted probability is greater than 0.5
+glm.pred[glm.probs > 0.5] <- "Up"
+
+# Create a confusion matrix comparing actual market direction to predicted direction
+conf_matrix <- table(Weekly$Direction, glm.pred)
+
+# Print the confusion matrix to evaluate classification performance
+print(conf_matrix)
+
+```
+
+```{r }
+
+# Calculate the classification accuracy by comparing predicted directions to actual directions
+accuracy <- mean(glm.pred == Weekly$Direction)
+
+# Print the accuracy to evaluate the overall prediction performance of the model
+print(accuracy)
+
+```
+
+## LDA on Default Data 
+
+```{r }
+
+x <- Default$balance
+# Extract the 'balance' variable from the dataset and store it in x.
+
+cl <- Default$default 
+# Extract the class labels ("No" or "Yes") and store in cl.
+
+nk <- table(cl)
+# Count how many observations belong to each class.
+
+n_num_classes <- length(nk)
+# Calculate the number of classes (e.g., 2).
+
+pi_hat <- nk / sum(nk)
+
+mu_hat <- as.matrix(by(x, cl, mean))
+# Compute the class means for 'balance' and store them as a matrix.
+
+s2_no <- sum((x[cl == "No"] - mu_hat[1])^2)
+# Compute the sum of squared deviations from the mean for class "No".
+
+s2_yes <- sum((x[cl == "Yes"] - mu_hat[2])^2)
+# Compute the sum of squared deviations from the mean for class "Yes".
+
+s2_pooled <- (s2_no + s2_yes) / (sum(nk) - n_num_classes)
+# Compute the pooled variance estimate across both classes.
+
+delta_k <- function(x_val, k_idx, mu_vec, s2_val, pi_vec) {
+  mu_k <- mu_vec[k_idx] 
+  # Select the mean for class k.
+  pi_k <- pi_vec[k_idx]
+  # Select the prior probability for class k.
+  return(x_val * mu_k / s2_val - mu_k^2 / (2 * s2_val) + log(pi_k))
+  # Return the discriminant function value for class k.
+}
+
+delta1_vals <- delta_k(x, 1, mu_hat, s2_pooled, pi_hat)
+# Calculate discriminant values for class 1 ("No").
+
+delta2_vals <- delta_k(x, 2, mu_hat, s2_pooled, pi_hat)
+# Calculate discriminant values for class 2 ("Yes").
+
+pred_lda_manual <- ifelse(delta2_vals > delta1_vals, "Yes", "No")
+# Predict class: assign "Yes" if class 2 has a higher discriminant value, else "No".
+
+table(cl, pred_lda_manual)
+# Create a confusion matrix comparing actual vs. predicted labels.
+
+
+```
+## Using MASS::Ida()
+
+```{r }
+
+# Load the MASS package which contains the lda() function for Linear Discriminant Analysis
+library(MASS)
+
+# Create a logical vector to identify training observations (years before 2009)
+train_indicies <- (Weekly$Year < 2009)
+
+# Subset the data for training using the logical vector
+train_data <- Weekly[train_indicies,]
+
+# Subset the data for testing (i.e., observations from 2009 and later)
+test_data <- Weekly[!train_indicies,]
+
+# Fit an LDA model using Lag2 as the predictor for the binary outcome Direction
+lda.fit <- lda(Direction ~ Lag2, data = train_data)
+
+# Use the fitted model to predict on the test dataset
+lda.pred_obj <- predict(lda.fit, newdata = test_data)
+
+# Extract the predicted class labels from the prediction object
+lda.class <- lda.pred_obj$class
+
+# Create a confusion matrix comparing actual test labels with predicted labels
+conf_matrix_lda <- table(test_data$Direction, lda.class)
+
+# Print the confusion matrix to evaluate model performance
+print(conf_matrix_lda)
+
+# Display the first few rows of the posterior probabilities from the prediction
+head(lda.pred_obj$posterior)
+
+
+```
+
+##QDA on Weekly Data
+```{r }
+
+library(MASS)
+qda.fit <- qda(Direction ~ Lag2, data = train_data)
+qda.pred_obj <- predict(qda.fit, newdata = test_data)
+qda.class <- qda.pred_obj$class
+conf_matrix_qda <- table(test_data$Direction, qda.class)
+print(conf_matrix_qda)
+```
+
+##Evaluation Classification Models -> Generating ROC Curve Data
+```{r }
+
+lda1 <- lda(cl ~ x, data = Default)
+lda1
+```
+##ROC_Manual
+
+```{r }
+
+# Extract the posterior probabilities from the LDA prediction
+pr <- predict(lda1)$posterior
+
+# Convert the true class labels ("Yes"/"No") to numeric: Yes = 1, No = 0
+cl_numeric <- as.numeric(Default$default) - 1
+
+# Define a sequence of threshold values from 0.01 to 0.99 (for ROC curve)
+thrange <- seq(0.01, 0.99, by = 0.01)
+
+# Create an empty data frame to store False Positive Rate (FPrate) and True Positive Rate (TPrate)
+roc_data <- data.frame(FPrate = numeric(length(thrange)), 
+                       TPrate = numeric(length(thrange)))
+
+# Loop over each threshold to compute TPR and FPR
+for (i in 1:length(thrange)) {
+  
+  # Set the current threshold
+  th <- thrange[i]
+  
+  # Predict class: if posterior probability for "Yes" > threshold, classify as 1 (Yes), else 0 (No)
+  pred_class <- ifelse(pr[, "Yes"] > th, 1, 0)
+
+  # Calculate confusion matrix components:
+  TP <- sum(pred_class == 1 & cl_numeric == 1)  # True Positives
+  FN <- sum(pred_class == 0 & cl_numeric == 1)  # False Negatives
+  FP <- sum(pred_class == 1 & cl_numeric == 0)  # False Positives
+  TN <- sum(pred_class == 0 & cl_numeric == 0)  # True Negatives
+  
+  # Calculate and store True Positive Rate (Sensitivity)
+  roc_data$TPrate[i] <- TP / (TP + FN)
+
+  # Calculate and store False Positive Rate (1 - Specificity)
+  roc_data$FPrate[i] <- FP / (FP + TN)
+}
+
+# Plot the ROC curve: FPR on x-axis, TPR on y-axis
+plot(roc_data$FPrate, roc_data$TPrate, type = "l", col = "red", lwd = 2,
+     xlab = "False Positive Rate", ylab = "True Positive Rate", main = "ROC Curve")
+
+# Add a reference diagonal line (random classifier line)
+abline(a = 0, b = 1, lty = 2)
+
+                       
+```
+
+##pROC Package
+
+
+```{r }
+
+# Load the package
+library(pROC)
+
+# Posterior probability for "Yes" class
+prob_yes <- predict(lda1)$posterior[, "Yes"]
+
+# True binary class labels
+cl_numeric <- as.numeric(Default$default) - 1
+
+# Generate ROC object
+roc_obj <- roc(response = cl_numeric,
+               predictor = prob_yes,
+               levels = c(0, 1),  # 0 = control, 1 = case
+               direction = "<")
+
+# Plot ROC curve
+plot(roc_obj, col = "blue", lwd = 2, main = "ROC Curve with pROC")
+
+# Add AUC to plot
+auc_val <- auc(roc_obj)
+legend("bottomright", legend = paste("AUC =", round(auc_val, 3)), col = "blue", lwd = 2)
+
+```
+##ROCR Package
+
+```{r }
+
+# Load the package
+library(ROCR)
+
+# Create prediction and performance objects
+pred <- prediction(prob_yes, cl_numeric)
+perf <- performance(pred, "tpr", "fpr")
+
+# Plot ROC curve
+plot(perf, col = "darkgreen", lwd = 2, main = "ROC Curve with ROCR")
+abline(a = 0, b = 1, lty = 2)
+
+# Calculate AUC
+auc_perf <- performance(pred, measure = "auc")
+auc_val <- auc_perf@y.values[[1]]
+legend("bottomright", legend = paste("AUC =", round(auc_val, 3)), col = "darkgreen", lwd = 2)
+
+```
+
+
+## KNN Classifier
+
+```{r }
+
+library(class)  # Load the 'class' package, which provides the knn() function
+
+# If there is an object named 'knn' in the environment that masks the true function, remove it
+if ("knn" %in% ls() && !is.function(knn)) rm(knn)
+
+# Convert the Lag2 variable from the training dataset to a matrix format (required by knn)
+train_X_knn <- as.matrix(train_data$Lag2)
+
+# Convert the Lag2 variable from the test dataset to a matrix format
+test_X_knn <- as.matrix(test_data$Lag2)
+
+# Extract the true class labels (Direction) from the training data
+train_Direction_knn <- train_data$Direction
+
+# Set a random seed for reproducibility of the KNN prediction
+set.seed(123)
+
+# Apply the KNN algorithm with k = 1, using the 'class' package's knn function
+knn.pred_k1 <- class::knn(train = train_X_knn,
+                          test = test_X_knn,
+                          cl = train_Direction_knn,
+                          k = 1)
+
+# Create a confusion matrix comparing true labels (from test data) with predicted labels
+conf_matrix_knn_k1 <- table(test_data$Direction, knn.pred_k1)
+
+# Print the confusion matrix to evaluate classification performance
+print(conf_matrix_knn_k1)
+
+
+knn.pred_k10 <- knn(train = train_X_knn, test = test_X_knn, cl=train_Direction_knn, k =10)
+
+```
+```{r }
+
+knn.pred_k10 <- knn(train = train_X_knn, test = test_X_knn, cl=train_Direction_knn, k =10)
+accuracy_k10 <- mean(knn.pred_k10 == test_data$Direction)
+accuracy_k10
+```
+
+# Resampling Methods - Cross-Validation
+
+##Validation Set Approach in R
+
+```{r }
+library(ISLR)
+
+# Number of rows in Auto dataset
+n <- nrow(Auto)
+
+# Draw a random 50/50 split
+set.seed(123)
+draw <- sample(1:n, size = floor(n / 2))
+
+# Split into training and test sets
+train_data <- Auto[draw, ]
+test_data <- Auto[-draw, ]
+
+# Fit linear and quadratic models
+mod1 <- lm(mpg ~ horsepower, data = train_data)
+mod2 <- lm(mpg ~ horsepower + I(horsepower^2), data = train_data)
+
+# Predict on test set
+pred1_test <- predict(mod1, newdata = test_data)
+mse1_test <- mean((test_data$mpg - pred1_test)^2)
+
+pred2_test <- predict(mod2, newdata = test_data)
+mse2_test <- mean((test_data$mpg - pred2_test)^2)
+
+# Output the mean squared errors
+print(mse1_test)
+print(mse2_test)
+
+```
+
+##Leave One Out Cross Validation (LOOCV)
+
+```{r }
+
+MSE1_loo <- numeric(n)  # Initialize a numeric vector to store LOO MSEs for the linear model
+MSE2_loo <- numeric(n)  # Initialize a numeric vector to store LOO MSEs for the quadratic model
+
+for( i in 1:n){  # Loop over each observation in the dataset
+  
+  train_loo <- Auto[-i,]  # Exclude the i-th observation to form the training set
+  test_loo <- Auto[i,]  # Use the i-th observation as the test set
+  
+  mod1_loo <- lm(mpg ~ horsepower, data = train_loo)  # Fit linear model on LOO training data
+  pred1_loo <- predict(mod1_loo, newdata = test_loo)  # Predict mpg for the left-out observation using the linear model
+  MSE1_loo[i] <- (test_loo$mpg - pred1_loo)^2  # Store squared prediction error for the linear model
+  
+  mod2_loo <- lm(mpg ~ horsepower + I(horsepower^2), data = train_loo)  # Fit quadratic model on LOO training data
+  pred2_loo <- predict(mod2_loo, newdata = test_loo)  # Predict mpg for the left-out observation using the quadratic model
+  MSE2_loo[i] <- (test_loo$mpg - pred2_loo)^2  # Store squared prediction error for the quadratic model
+  
+  mean_MSE1_loo <- mean(MSE1_loo)  # Calculate current mean LOO MSE for linear model
+  mean_MSE2_loo <- mean(MSE2_loo)  # Calculate current mean LOO MSE for quadratic model
+}
+
+print(mean_MSE1_loo)  # Print final mean LOO MSE for the linear model
+print(mean_MSE2_loo)  # Print final mean LOO MSE for the quadratic model
+
+
+```
+
+##Using the boot for LOOCV with linear models
+
+```{r }
+
+library(boot)  
+# Load the 'boot' package, which provides the cv.glm() function for cross-validation
+
+glm.fit.linear <- glm(mpg ~ horsepower, data = Auto)
+# Fit a simple linear regression model predicting mpg from horsepower
+
+cv.err.linear <- cv.glm(Auto, glm.fit.linear)
+# Perform leave-one-out cross-validation (LOOCV) on the linear model using the entire Auto dataset
+
+print(cv.err.linear$delta[1])
+# Print the estimated LOOCV error (delta[1]) for the linear model
+
+
+
+glm.fit.quad <- glm(mpg ~ poly(horsepower, 2), data = Auto)
+# Fit a quadratic regression model using a second-degree polynomial transformation of horsepower
+
+cv.err.quad <- cv.glm(Auto, glm.fit.quad)
+# Perform LOOCV on the quadratic model
+
+print(cv.err.quad$delta[1])
+# Print the estimated LOOCV error for the quadratic model
+
+```
+
+
+##k-Fold CV using boot
+
+```{r }
+
+# Load the boot library for cv.glm()
+library(boot)
+
+# Fit linear regression model on Auto dataset
+glm.fit.auto <- glm(mpg ~ horsepower, data = Auto)
+
+# Perform 10-fold CV for the linear model
+cv.err.10fold <- cv.glm(Auto, glm.fit.auto, K = 10)
+
+# Print raw 10-fold CV mean squared error
+print(cv.err.10fold$delta[1])
+
+# Fit logistic regression model on Default dataset
+glm.fit.default <- glm(default ~ income + balance,
+                       data = Default,
+                       family = binomial)
+
+# Perform 10-fold CV for the logistic model
+cv.err.default.10fold <- cv.glm(Default, glm.fit.default, K = 10)
+
+# Print raw 10-fold CV error
+cv.err.default.10fold$delta[1]
+
+# Define custom cost function for classification (error rate)
+cost.function <- function(r, pi = 0) mean(abs(r != (pi > 0.5)))
+
+# Apply 10-fold CV using custom cost function for classification
+cv.err.classification <- cv.glm(Default, glm.fit.default,
+                                K = 10, cost = cost.function)
+
+# Print 10-fold classification error rate
+cv.err.classification$delta[1]
+
+# Set number of folds for manual implementation
+k <- 10
+
+# Randomly assign each observation to a fold
+folds <- sample(cut(seq(1, nrow(Default)), breaks = k, labels = FALSE))
+
+# Preallocate vector to store error rates
+cv_errors <- numeric(k)
+
+# Loop through each fold
+for (j in 1:k) {
+  # Identify test indices for current fold
+  test_indices <- which(folds == j, arr.ind = TRUE)
+  
+  # Subset test data for the fold
+  test_data_fold <- Default[test_indices, ]
+  
+  # Subset training data (all except test indices)
+  train_data_fold <- Default[-test_indices, ]
+  
+  # Fit logistic model on training fold
+  fit_fold <- glm(default ~ income + balance,
+                  data = train_data_fold,
+                  family = binomial)
+  
+  # Predict probabilities on the test fold
+  probs_fold <- predict(fit_fold, newdata = test_data_fold, type = "response")
+  
+  # Convert probabilities to class predictions
+  preds_fold <- ifelse(probs_fold > 0.5, "Yes", "No")
+  
+  # Compute classification error for current fold
+  cv_errors[j] <- mean(preds_fold != test_data_fold$default)
+}
+
+# Calculate mean classification error over all folds
+mean_cv_error_10fold <- mean(cv_errors)
+
+# Print final averaged 10-fold CV classification error
+print(mean_cv_error_10fold)
+
+
+```
+
+
