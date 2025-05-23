@@ -1012,7 +1012,6 @@ plot(regfit.bwd, scale = "adjr2", col = gray.colors(10))
 
 set.seed(123)
 
-
 n <- 100
 p_vars <- 10
 X_sim <- matrix(0, n, p_vars)
@@ -1020,13 +1019,17 @@ X_sim <- matrix(0, n, p_vars)
 for(j in 1:p_vars) X_sim[,j] <- rnorm(n, sd= j)
 
 beta_sim <- 2:(p_vars+1)
-
 e_sim <- rnorm(n, sd = 200)
-y_sim <- 1 + X_sim %% beta_sim + e_sim
 
+y_sim <- 1 + X_sim %*% beta_sim + e_sim  # <-- bruk matriseprodukt
+
+# Sørg for at y_sim er en vektor, ikke en matrise
+y_sim <- as.vector(y_sim)
+
+# Klassisk OLS
 ols.fit <- lm(y_sim ~ X_sim)
 
-summary(ols.fit)
+
 ```
 
 ## Ridge Example 
@@ -1034,12 +1037,36 @@ summary(ols.fit)
 
 ```{r }
 
+# Ridge-regresjon
 library(glmnet)
+ridge.fit_small_lambda <- glmnet(X_sim, y_sim, alpha = 0, lambda = 0.01)
 
-ridge.fit_small_lambda <- glmnet(X_sim,y_sim, alpha = 0, lambda= 0.01)
+# Sammenligning av koeffisienter
+ols_coefs <- coef(ols.fit)
+ridge_coefs <- coef(ridge.fit_small_lambda)
 
-
-cbind(coef(ols.fit), )
+cbind(OLS = ols_coefs, Ridge = ridge_coefs)
 
 ```
+
+## Choosing a lambda by LOOCV
+
+```{r }
+
+cv.ridge <- cv.glmnet(X_sim, y_sim, alpha = 0, nfolds = n)
+
+lambda_min_ridge <- cv.ridge$lambda.min
+
+ridgemin.fit <- glmnet(X_sim, y_sim, alpha = 0 , lambda =lambda_min_ridge)
+
+cbind(coef(ols.fit), coef(ridgemin.fit))
+
+```
+
+
+
+
+
+
+
 
