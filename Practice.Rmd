@@ -301,6 +301,20 @@ glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
 summary(glm.fit)
 
 ```
+# LogReg Video
+
+```{r }
+
+#names(Smarket)
+#summary(Smarket)
+#?Smarket
+
+pairs(Smarket, col = Smarket$Direction)
+
+```
+
+
+
 ## Conf Matrix on Weekly Data
 
 ```{r }
@@ -581,7 +595,6 @@ knn.pred_k10 <- knn(train = train_X_knn, test = test_X_knn, cl=train_Direction_k
 accuracy_k10 <- mean(knn.pred_k10 == test_data$Direction)
 accuracy_k10
 ```
-
 # Resampling Methods - Cross-Validation
 
 ##Validation Set Approach in R
@@ -757,4 +770,276 @@ print(mean_cv_error_10fold)
  
 ```
 
+#Resampling Methods - The Bootstrap Coefficients
+
+```{r }
+library(ISLR)  # Loads the ISLR package, which contains the 'Default' dataset used for this analysis.
+library(boot)  # Loads the boot package, which provides functions for bootstrapping.
+
+glm.fit.full <- glm(default ~ income + balance, data = Default, family = "binomial")  
+# Fits a logistic regression model predicting 'default' using 'income' and 'balance' as predictors.
+
+#summary(glm.fit.full)
+# (Commented out) Would display a summary of the fitted logistic regression model.
+
+boot.fn.coeffs <- function(data, index){
+  # Defines a function for bootstrapping. It takes a dataset and a vector of row indices.
+
+  fit <- glm(default ~ income + balance, data = data[index,], family = "binomial")
+  # Fits a logistic regression model on the bootstrap sample defined by the given indices.
+
+  return(coef(fit))
+  # Returns the estimated coefficients from the fitted model.
+}
+
+set.seed(123)
+# Sets the random seed to ensure reproducibility of the bootstrap results.
+
+boot_results <- boot(data = Default, statistic = boot.fn.coeffs, R = 1000)
+# Performs bootstrap resampling 1000 times using 'boot.fn.coeffs' on the 'Default' dataset.
+
+print(boot_results)
+# Displays the results of the bootstrap procedure, including estimated standard errors.
+
+```
+
+## Bootstrap SE for the sample median
+
+```{r }
+
+library(MASS)  # Loads the MASS package, which includes the 'Boston' housing dataset.
+library(boot)  # Loads the boot package for performing bootstrap resampling.
+
+medv.median.original <- median(Boston$medv)  
+# Calculates the original sample median of the 'medv' variable (median home value) from the Boston dataset.
+
+boot.fn.median <- function(data_vector, index){
+  # Defines a function for the bootstrap procedure that computes the median of a sample.
+  
+  return(median(data_vector[index]))  
+  # Returns the median of the resampled data points.
+}
+
+set.seed(123)  
+# Sets a seed to ensure reproducibility of the bootstrap results.
+
+boot_median_results <- boot(data = Boston$medv, statistic = boot.fn.median, R = 1000)  
+# Performs the bootstrap with 1000 resamplings of the 'medv' variable using the defined function.
+
+print(boot_median_results)  
+# Prints the bootstrap results, including the original statistic and estimated standard error.
+
+```
+## Bootstrap Confidence Intervals using boot.ci
+
+```{r }
+
+conf_intervals <- boot.ci(boot_results, type = c("norm", "perc"), index = 2)  
+# Computes confidence intervals for the second parameter (index = 2) in the bootstrap results object 'boot_results',
+# using the normal and percentile methods. The BCa method is excluded due to potential estimation issues.
+
+print(conf_intervals)  
+# Displays the computed confidence intervals for the selected coefficient.
+
+boot.ci(boot_median_results, type = c("norm", "perc", "bca"))  
+# Computes and displays confidence intervals for the bootstrap median estimates,
+# using normal, percentile, and BCa methods. This usually works well for scalar statistics like the median.
+
+
+```
+## Probability an Observation is in a Bootstrap Sample
+
+```{r }
+
+pr_in_bootstrap <- function(n){
+  return(1-(1-1/n)^n)
+  
+}
+
+n_values <- c(5,100,10000)
+
+sapply(n_values, pr_in_bootstrap)
+```
+## Mean and SE of Mean for Bostonmedv
+
+```{r }
+
+library(MASS)
+data(Boston)
+
+mu_hat_medv <- mean(Boston$medv)
+se_mu_hat_formula <- sd(Boston$medv)/ sqrt(nrow(Boston))
+
+mu_hat_medv
+se_mu_hat_formula
+```
+## Bootstrap for SE of Mean for Bostonmedv
+
+```{r }
+
+boot.fn_mean <- function(data_vector, index){
+  # Defines a function that computes the mean of a bootstrap sample.
+  # It takes a data vector and a set of indices, then returns the sample mean.
+
+  return(mean(data_vector[index]))
+  # Calculates and returns the mean of the data points selected by the bootstrap indices.
+}
+
+set.seed(1)
+# Sets the random seed to ensure reproducibility of the bootstrap results.
+
+boot_mean_results <- boot(Boston$medv, boot.fn_mean, R = 1000)
+# Performs bootstrap resampling 1000 times on the 'medv' variable from the Boston dataset,
+# using the custom function 'boot.fn_mean' to compute the sample mean in each resample.
+
+print(boot_mean_results)
+# Displays the results of the bootstrap procedure,
+# including the original sample mean, estimated bias, and standard error of the mean.
+
+```
+## Bootstrap SE for 10th Percentile of Bostonmedv
+
+```{r }
+
+boot.fn_q10 <- function(data_vector, index){
+  # Defines a function that computes the 10th percentile (quantile at 0.1) from a bootstrap sample.
+  # It takes a numeric data vector and a vector of bootstrap indices as input.
+
+  return(quantile(data_vector[index], probs = 0.1))
+  # Calculates and returns the 10th percentile of the resampled data points.
+}
+  
+set.seed(1)
+# Sets the random seed to ensure reproducibility of the bootstrap results.
+
+boot_q10_results <- boot(Boston$medv, boot.fn_q10, R = 1000)
+# Performs bootstrap resampling 1000 times on the 'medv' variable from the Boston dataset,
+# using the custom function 'boot.fn_q10' to compute the 10th percentile for each resample.
+
+print(boot_q10_results)
+# Displays the results of the bootstrap procedure,
+# including the original 10th percentile, estimated bias, and standard error.
+
+  
+```
+## Best Subset Selection with leaps::regsubsets
+
+```{r }
+
+Auto$age <- 83 - Auto$year
+# Oppretter en ny variabel 'age' i datasettet Auto. Den representerer alderen til bilen, antatt basert på 1983 som referanseår.
+
+Auto_subset <- Auto[, !(names(Auto) %in% c("name", "origin", "year"))]
+# Fjerner variablene 'name', 'origin' og 'year' fra datasettet, ettersom disse ikke skal inngå i regresjonsanalysen.
+
+library(leaps)
+# Laster pakken 'leaps', som inneholder funksjoner for subset selection i regresjonsanalyse.
+
+regfit.full <- regsubsets(mpg ~ ., data = Auto_subset, nvmax = 6)
+# Kjører 'best subset selection' på mpg (miles per gallon) med de gjenværende variablene i datasettet.
+# nvmax = 6 angir at vi ønsker å vurdere modeller med opptil 6 prediktorer.
+
+reg.summary <- summary(regfit.full)
+# Lager en oppsummering av subset-seleksjonen med statistikker som R², justert R², Mallows' Cp og BIC for hver modellstørrelse.
+
+print(reg.summary)
+# Skriver ut hele oppsummeringen av modellutvalget.
+
+names(reg.summary)
+# Viser hvilke elementer som er tilgjengelige i reg.summary, f.eks. 'which', 'rsq', 'adjr2', 'bic', osv.
+
+
+```
+
+##Shows which variables are in the best model of each size 
+
+```{r }
+
+cbind(reg.summary$which[,-1], adjR2 = round(reg.summary$adjr2,4))
+
+```
+## Forward Stepside Selection with leaps::regsubsets
+
+```{r }
+
+regfit.fwd <- regsubsets(mpg ~ ., data = Auto_subset, nvmax = 6, method = "forward")
+# Performs forward stepwise subset selection to predict 'mpg' using all predictors in 'Auto_subset'.
+# It considers models with up to 6 variables (nvmax = 6).
+
+summary.fwd <- summary(regfit.fwd)
+# Stores the summary of the forward stepwise regression object, including R², adjusted R², Cp, and BIC.
+
+cbind(summary.fwd$which[,-1], adjR2 = round(summary.fwd$adjr2, 4))
+# Combines a matrix of which variables are included in each model (excluding the intercept column)
+# with the corresponding adjusted R² values, rounded to 4 decimals.
+# This makes it easy to compare variable combinations with their adjusted R² scores.
+
+```
+```{r }
+plot(regfit.fwd, scale = "adjr2", col = gray.colors(10))
+# Plots the models selected by forward stepwise selection, with adjusted R² as the evaluation metric.
+# Each row represents a model size (1 to nvmax), and filled boxes indicate included variables.
+# The gray scale is used for visual clarity.
+```
+## Backward Stepside Selection with leaps::regsubsets
+
+
+```{r }
+
+regfit.bwd <- regsubsets(mpg ~ ., data = Auto_subset, nvmax = 6, method = "backward")
+# Performs backward stepwise subset selection to predict 'mpg' using all predictors in 'Auto_subset'.
+# It considers models with up to 6 variables (nvmax = 6).
+
+summary.bwd <- summary(regfit.bwd)
+# Stores the summary of the forward stepwise regression object, including R², adjusted R², Cp, and BIC.
+
+cbind(summary.bwd$which[,-1], adjR2 = round(summary.bwd$adjr2, 4))
+# Combines a matrix of which variables are included in each model (excluding the intercept column)
+# with the corresponding adjusted R² values, rounded to 4 decimals.
+# This makes it easy to compare variable combinations with their adjusted R² scores.
+
+```
+```{r }
+plot(regfit.bwd, scale = "adjr2", col = gray.colors(10))
+# Plots the models selected by forward stepwise selection, with adjusted R² as the evaluation metric.
+# Each row represents a model size (1 to nvmax), and filled boxes indicate included variables.
+# The gray scale is used for visual clarity.
+```
+
+## OLS Regression Example
+
+```{r }
+
+set.seed(123)
+
+
+n <- 100
+p_vars <- 10
+X_sim <- matrix(0, n, p_vars)
+
+for(j in 1:p_vars) X_sim[,j] <- rnorm(n, sd= j)
+
+beta_sim <- 2:(p_vars+1)
+
+e_sim <- rnorm(n, sd = 200)
+y_sim <- 1 + X_sim %% beta_sim + e_sim
+
+ols.fit <- lm(y_sim ~ X_sim)
+
+summary(ols.fit)
+```
+
+## Ridge Example 
+
+
+```{r }
+
+library(glmnet)
+
+ridge.fit_small_lambda <- glmnet(X_sim,y_sim, alpha = 0, lambda= 0.01)
+
+
+cbind(coef(ols.fit), )
+
+```
 
