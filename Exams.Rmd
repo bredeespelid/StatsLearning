@@ -221,20 +221,10 @@ print(all_rmse)
 
 library(gam)
 
-# Modell: antall krav som funksjon av bilverdi, eksponering og skadebeløp (numeriske) + faktorer
-model <- gam(numclaims ~ 
-               s(veh_value, df=4) +
-               s(exposure, df=4) +
-               s(claimcst0, df=4) +
-               veh_body + veh_age + gender + area + agecat,
-             family = poisson, data = task2b)
-
-
-#summary(model)
-
+gam1=gam(claimcst0~s(veh_value)+s(exposure)+s(numclaims)+
+veh_body+veh_age+gender+area+agecat,data=task2b)
 par(mfrow=c(2,2))
-plot(model, se=TRUE, col="blue")
-
+plot(gam1,terms=c("s(veh_value)","s(exposure)","s(numclaims)"))
 ```
 
 ## Task 2e

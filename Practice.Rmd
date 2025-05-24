@@ -13,6 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("tinytex")
 
 ## 50/50 Split
+
+
 ```{r Splitting data}
 
 # Creates a sequence of integers from 1 to 20
@@ -1035,15 +1037,23 @@ ols.fit <- lm(y_sim ~ X_sim)
 
 ```{r }
 
-# Ridge-regresjon
+# Load the 'glmnet' package, which is used for Ridge and Lasso regression
 library(glmnet)
+
+# Fit a Ridge regression model with a small penalty (lambda = 0.01)
+# alpha = 0 specifies Ridge regression (Lasso would be alpha = 1)
+# X_sim is the matrix of predictors, y_sim is the response variable
 ridge.fit_small_lambda <- glmnet(X_sim, y_sim, alpha = 0, lambda = 0.01)
 
-# Sammenligning av koeffisienter
+# Extract the coefficients from an ordinary least squares (OLS) model
 ols_coefs <- coef(ols.fit)
+
+# Extract the coefficients from the Ridge regression model
 ridge_coefs <- coef(ridge.fit_small_lambda)
 
+# Combine OLS and Ridge coefficients side by side for comparison
 cbind(OLS = ols_coefs, Ridge = ridge_coefs)
+
 
 ```
 
@@ -1051,25 +1061,96 @@ cbind(OLS = ols_coefs, Ridge = ridge_coefs)
 
 ```{r }
 
+# Perform k-fold cross-validation (with n folds) to find the optimal lambda for Ridge regression
+# alpha = 0 specifies Ridge regression
 cv.ridge <- cv.glmnet(X_sim, y_sim, alpha = 0, nfolds = n)
 
+# Extract the lambda value that gives the minimum cross-validation error
 lambda_min_ridge <- cv.ridge$lambda.min
 
-ridgemin.fit <- glmnet(X_sim, y_sim, alpha = 0 , lambda =lambda_min_ridge)
+# Fit a Ridge regression model using the optimal lambda value
+ridgemin.fit <- glmnet(X_sim, y_sim, alpha = 0, lambda = lambda_min_ridge)
 
+# Combine and compare the coefficients from the OLS model and the Ridge model with optimal lambda
 cbind(coef(ols.fit), coef(ridgemin.fit))
+
+
+```
+
+## Lasso Example
+
+```{r }
+
+cv.lasso <- cv.glmnet(X_sim, y_sim, alpha = 1, nfolds = n)
+
+lambda_min_lasso <- cv.lasso$lambda.min
+
+lassomin.fit <- glmnet(X_sim, y_sim, alpha = 1, lambda= lambda_min_lasso)
+
+cbind(coef(ols.fit), coef(ridgemin.fit), coef(lassomin.fit)   )
+
+```
+
+## PCR Example 
+
+```{r }
+
+library(pls)
+library(ISLR)
+
+
+Auto2 <- Auto[, !(names(Auto) %in% c("name", "origin", "year"))]
+
+Auto2$age <-83 - Auto$year
+
+set.seed(123)
+
+n_auto <- nrow(Auto2)
+
+train_idx_auto <- sample(1:n_auto, floor(n_auto/2))
+train_auto <- Auto2[train_idx_auto,]
+test_auto <- Auto2[-train_idx_auto,]
+
+pcr.fit <- pcr(mpg ~ ., data = train_auto, scale=TRUE, validation="CV" )
+
+summary(pcr.fit)
+
+validationplot(pcr.fit, val.type = "MSEP")
+
+
+```
+
+```{r }
+
+validationplot(pcr.fit, val.type = "MSEP")
 
 ```
 
 
+```{r }
+
+# Fit a full linear regression model using all predictors in the training set
+regall.fit <- lm(mpg ~ ., data = train_auto)
+
+# Fit a Principal Component Regression (PCR) model with 4 components, standardizing predictors
+pcr.fit_M4 <- pcr(mpg ~ ., ncomp = 4, data = train_auto, scale = TRUE)
+
+# Predict mpg on the test set using the OLS model
+predall_test <- predict(regall.fit, newdata = test_auto)
+
+# Calculate mean squared error (MSE) for the OLS predictions
+MSEall_test <- mean((test_auto$mpg - predall_test)^2)
+
+# Predict mpg on the test set using the PCR model
+predpcr_test <- predict(pcr.fit_M4, newdata = test_auto)
+
+# Calculate mean squared error (MSE) for the PCR predictions
+MSEpcr_test <- mean((test_auto$mpg - predpcr_test)^2)
 
 
+print(MSEall_test)
+print(MSEpcr_test)
 
 
-
-
-
-
-
-
+```
 
