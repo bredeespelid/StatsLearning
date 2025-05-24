@@ -66,7 +66,7 @@ print(conf_intervals_perc)
 ```{r Task 1d:}
 
 
-model_sq_returns_Smarket <- lm(Today^2 ~ Lag1^2, data = market)
+model_sq_returns_Smarket <- lm(I(Today^2) ~ Lag1^2, data = market)
 
 summary(model_sq_returns_Smarket)
 ```
@@ -74,35 +74,25 @@ summary(model_sq_returns_Smarket)
 
 
 ```{r Task 1e:}
+library(boot)  # Load the 'boot' package for bootstrap functionality
 
-## Task 1e – Beregn bootstrap-standardfeil for koeffisienten til (Lag1)^2
-
-library(boot)
-
-# Definer funksjon som returnerer koeffisienten til (Lag1)^2 i modellen
-bootstrap_lag1_squared <- function(data, index) {
-  sampled_data <- data[index, ]
-  model <- lm(I(Today^2) ~ I(Lag1^2), data = sampled_data)
-  return(coef(model)[["I(Lag1^2)"]])  # Navngitt tilgang til koeffisient
+volcoef <- function(data, index) {
+  # Define a function that returns the coefficient of Lag1^2 
+  # from a regression of Today^2 on Lag1^2 using a bootstrap sample
+  coef(lm(I(Today^2) ~ I(Lag1^2), data = data[index, ]))[2]
 }
 
-# Sett frø for reproduserbarhet
-set.seed(1)
+set.seed(1)  # Set seed for reproducibility
 
-# Kjør bootstrap med 1000 replikasjoner
-boot_result <- boot(
-  data = market,
-  statistic = bootstrap_lag1_squared,
-  R = 1000
-)
+boot.volcoef <- boot(Smarket, volcoef, R = 1000)
+# Perform bootstrap with 1000 replications to estimate the coefficient's sampling distribution
 
-# Beregn standardavviket (standardfeilen) til koeffisienten
-boot_se <- sd(boot_result$t)
-cat("Bootstrap-estimert standardfeil:", round(boot_se, 5), "\n")
+sd(boot.volcoef$t)
+# Calculate the bootstrap estimate of the standard error for the coefficient
 
-# Sammenlign med OLS-resultatet fra Task 1d
-ols_model <- summary(model_sq_returns_Smarket)
-cat("OLS standardfeil for koeffisienten:", round(ols_model$coefficients["Lag1", "Std. Error"], 5), "\n")
+summary(lm(I(Today^2) ~ I(Lag1^2), data = Smarket))$coefficients[2, 2]
+# Extract the standard error of the coefficient from the linear regression output
+
 
 ```
 
@@ -157,7 +147,8 @@ set.seed(123)
 folds <- vfold_cv(task2b, v = 10)
 
 # Specify a linear regression model using the "lm" engine
-linmod <- linear_reg() %>% set_engine("lm")
+linmod <- linear_reg() %>% 
+  set_engine("lm")
 
 # ---- FULL MODEL ----
 
