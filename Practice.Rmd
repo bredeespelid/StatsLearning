@@ -13,8 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("tinytex")
 
 ## 50/50 Split
-
-
 ```{r Splitting data}
 
 # Creates a sequence of integers from 1 to 20
@@ -1062,6 +1060,11 @@ ridgemin.fit <- glmnet(X_sim, y_sim, alpha = 0 , lambda =lambda_min_ridge)
 cbind(coef(ols.fit), coef(ridgemin.fit))
 
 ```
+
+
+
+
+
 
 
 
